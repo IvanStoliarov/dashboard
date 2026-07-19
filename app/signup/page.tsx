@@ -1,0 +1,22 @@
+import { redirect } from "next/navigation";
+import { AuthForm } from "@/components/auth-form";
+import { AuthShell } from "@/components/auth-shell";
+import { createClient } from "@/lib/supabase/server";
+
+export default async function SignupPage() {
+  const supabase = await createClient();
+  const { data } = await supabase.auth.getClaims();
+
+  if (data?.claims) {
+    redirect("/dashboard");
+  }
+
+  return (
+    <AuthShell
+      title="Create your account"
+      description="Use an email and password to start your local account."
+    >
+      <AuthForm mode="signup" />
+    </AuthShell>
+  );
+}
