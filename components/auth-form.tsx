@@ -15,6 +15,38 @@ export function AuthForm({ mode }: { mode: AuthMode }) {
 
   return (
     <form action={formAction} className='mt-8 space-y-5' noValidate>
+      {!isLogin && (
+        <div>
+          <label
+            htmlFor='username'
+            className='mb-2 block text-sm font-medium text-zinc-800'
+          >
+            Username
+          </label>
+          <input
+            id='username'
+            name='username'
+            type='text'
+            autoComplete='username'
+            minLength={3}
+            maxLength={30}
+            pattern='[A-Za-z0-9_ -]{3,30}'
+            required
+            aria-invalid={Boolean(state.errors?.username)}
+            aria-describedby={
+              state.errors?.username ? 'username-error' : undefined
+            }
+            className='h-11 w-full rounded-lg border border-zinc-300 bg-white px-3 text-sm text-zinc-950 outline-none transition placeholder:text-zinc-400 focus:border-zinc-950 focus:ring-2 focus:ring-zinc-950/10'
+            placeholder='Firstname Lastname'
+          />
+          {state.errors?.username && (
+            <p id='username-error' className='mt-2 text-sm text-red-600'>
+              {state.errors.username}
+            </p>
+          )}
+        </div>
+      )}
+
       <div>
         <label
           htmlFor='email'

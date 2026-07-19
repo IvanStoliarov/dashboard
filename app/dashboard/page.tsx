@@ -11,15 +11,20 @@ export default async function DashboardPage() {
     redirect('/login');
   }
 
-  const email =
-    typeof claims.email === 'string' ? claims.email : 'Authenticated user';
+  const { data: profile } = await supabase
+    .from('profiles')
+    .select('email, username')
+    .eq('id', claims.sub)
+    .maybeSingle();
+  const email = profile?.email ?? 'Authenticated user';
+  const username = profile?.username ?? 'Authenticated user';
 
   return (
     <main className='min-h-screen bg-zinc-50 px-4 py-8 sm:px-6'>
       <div className='mx-auto max-w-5xl'>
         <header className='flex items-center justify-between rounded-2xl border border-zinc-200 bg-white px-5 py-4 shadow-sm'>
           <div>
-            <p className='text-sm font-semibold text-zinc-950'>Dashboard</p>
+            <p className='text-sm font-semibold text-zinc-950'>{username}</p>
             <p className='mt-0.5 text-sm text-zinc-500'>{email}</p>
           </div>
           <form action={logout}>

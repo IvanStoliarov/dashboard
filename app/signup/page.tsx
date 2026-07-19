@@ -14,7 +14,7 @@ export default async function SignupPage() {
   return (
     <AuthShell
       title="Create your account"
-      description="Use an email and password to start your local account."
+      description="Choose a username and use your email and password to start your local account."
     >
       <AuthForm mode="signup" />
     </AuthShell>
