@@ -1,0 +1,12 @@
+import { getTickets } from '@/lib/actions';
+import React from 'react';
+
+export default async function TicketsCountLabel() {
+  const tickets = await getTickets();
+
+  return (
+    <span className='rounded-full border border-zinc-200 bg-zinc-50 px-2.5 py-1 text-xs font-medium tabular-nums text-zinc-600'>
+      {tickets.length} {tickets.length === 1 ? 'ticket' : 'tickets'}
+    </span>
+  );
+}

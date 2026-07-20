@@ -11,6 +11,7 @@ import {
 import { getAllUsersAPI, getUserDataAPI } from './data/profiles';
 import type { Ticket } from './types';
 import { refresh } from 'next/cache';
+import { cache } from 'react';
 
 export interface NewTicketFormState {
   success: boolean;
@@ -75,11 +76,11 @@ export async function createTicket(
   };
 }
 
-export async function getTickets() {
+export const getTickets = cache(async () => {
   const { data, error } = await getTicketsAPI();
   if (error || !data) return [];
   return data;
-}
+});
 
 export async function getTicketById(id: Ticket['id']) {
   const { data, error } = await getTicketByIdAPI(id);
@@ -102,8 +103,8 @@ export async function fetchAllUsers() {
 }
 
 export interface TicketContentFormState {
-  success: boolean
-  message: string
+  success: boolean;
+  message: string;
   errors?: { [key: string]: string[] } | null;
 }
 
@@ -113,9 +114,11 @@ const updateTicketSchema = z.object({
   description: z.string('Not a string').min(5, 'Minimum 5 symbols'),
 });
 
-export async function updateTicketContent(prevState: TicketContentFormState, formData: FormData) {
-
-   const values = {
+export async function updateTicketContent(
+  prevState: TicketContentFormState,
+  formData: FormData,
+) {
+  const values = {
     id: String(formData.get('id')) || '',
     title: String(formData.get('title')) || '',
     description: String(formData.get('description')) || '',
@@ -127,8 +130,8 @@ export async function updateTicketContent(prevState: TicketContentFormState, for
     return {
       success: false,
       message: '',
-      errors
-    }
+      errors,
+    };
   }
   const { data, error } = await updateTicketAPI(values);
 
@@ -146,6 +149,5 @@ export async function updateTicketContent(prevState: TicketContentFormState, for
     success: true,
     message: 'Ticket successfully updated',
     errors: null,
-  }
-
+  };
 }
