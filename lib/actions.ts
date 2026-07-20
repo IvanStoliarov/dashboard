@@ -1,7 +1,12 @@
 'use server';
 
+import { revalidatePath } from 'next/cache';
 import z from 'zod';
-import { createTicketAPI } from './data/tickets';
+import {
+  createTicketAPI,
+  getTicketsAPI,
+  updateTicketAssigneeAPI,
+} from './data/tickets';
 
 export interface NewTicketFormState {
   success: boolean;
@@ -64,4 +69,40 @@ export async function createTicket(
     message: 'Ticket successfully created',
     errors: null,
   };
+}
+
+export async function getTickets() {
+  const { data, error } = await getTicketsAPI();
+  if (error || !data) return [];
+  return data;
+}
+
+const ticketAssigneeSchema = z.object({
+  ticketId: z.uuid(),
+  assignedTo: z.array(z.uuid()).transform(ids => [...new Set(ids)]),
+});
+
+export async function updateTicketAssignee(formData: FormData) {
+  const result = ticketAssigneeSchema.safeParse({
+    ticketId: String(formData.get('ticket_id')),
+    assignedTo: formData
+      .getAll('assigned_to')
+      .map(id => String(id))
+      .filter(Boolean),
+  });
+
+  if (!result.success) {
+    return;
+  }
+
+  const { error } = await updateTicketAssigneeAPI({
+    ticketId: result.data.ticketId,
+    assignedTo: result.data.assignedTo,
+  });
+
+  if (error) {
+    throw new Error('Could not update ticket assignee');
+  }
+
+  revalidatePath('/dashboard');
 }
