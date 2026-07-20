@@ -63,6 +63,7 @@ export type Database = {
           created_by: string
           description: string
           id: string
+          status: Database["public"]["Enums"]["ticket_status"]
           ticket_updated_at: string | null
           ticket_updated_by: string | null
           title: string
@@ -72,6 +73,7 @@ export type Database = {
           created_by?: string
           description: string
           id?: string
+          status?: Database["public"]["Enums"]["ticket_status"]
           ticket_updated_at?: string | null
           ticket_updated_by?: string | null
           title: string
@@ -81,6 +83,7 @@ export type Database = {
           created_by?: string
           description?: string
           id?: string
+          status?: Database["public"]["Enums"]["ticket_status"]
           ticket_updated_at?: string | null
           ticket_updated_by?: string | null
           title?: string
@@ -117,7 +120,7 @@ export type Database = {
       }
     }
     Enums: {
-      [_ in never]: never
+      ticket_status: "todo" | "in_progress" | "qa" | "done"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -244,6 +247,8 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      ticket_status: ["todo", "in_progress", "qa", "done"],
+    },
   },
 } as const
