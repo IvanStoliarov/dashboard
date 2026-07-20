@@ -29,7 +29,7 @@ export default function TicketMetadata({
       <Link
         href={`/ticket/${id}`}
         title={`Ticket id: ${id}`}
-        className='text-xs font-medium tabular-nums text-zinc-300'
+        className='text-xs font-medium tabular-nums text-zinc-300 hover:underline'
       >
         #{String(id).padStart(2, '0')}
       </Link>

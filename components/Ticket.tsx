@@ -16,7 +16,11 @@ export default function Ticket({ ticket }: TicketProps) {
           id={ticket.id}
           status={ticket.status}
         />
-        <TicketContent title={ticket.title} description={ticket.description} />
+        <TicketContent
+          id={ticket.id}
+          title={ticket.title}
+          description={ticket.description}
+        />
         <TicketAssigneeList assignees={ticket.ticket_assignees} />
       </div>
     </article>
