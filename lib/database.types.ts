@@ -111,6 +111,10 @@ export type Database = {
         Args: { p_assigned_to?: string; p_description: string; p_title: string }
         Returns: string
       }
+      update_ticket_assignee: {
+        Args: { p_profile_ids?: string[]; p_ticket_id: string }
+        Returns: undefined
+      }
     }
     Enums: {
       [_ in never]: never
@@ -243,4 +247,3 @@ export const Constants = {
     Enums: {},
   },
 } as const
-
