@@ -3,6 +3,8 @@ import { redirect } from 'next/navigation';
 import { createClient } from '@/lib/supabase/server';
 import LinkAsButton from '@/components/LinkAsButton';
 import TicketList from './TicketList';
+import { Suspense } from 'react';
+import Spinner from '@/components/Spinner';
 
 export default async function DashboardPage() {
   const supabase = await createClient();
@@ -29,7 +31,9 @@ export default async function DashboardPage() {
           New ticket
         </LinkAsButton>
       </section>
-      <TicketList />
+      <Suspense fallback={<Spinner />}>
+        <TicketList />
+      </Suspense>
     </div>
   );
 }
