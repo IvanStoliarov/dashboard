@@ -40,7 +40,7 @@ export default async function TicketList() {
         <ul className='grid gap-3'>
           {tickets.map((ticket, index) => (
             <li key={ticket.id}>
-              <Ticket ticket={ticket} number={index + 1} />
+              <Ticket ticket={ticket} />
             </li>
           ))}
         </ul>

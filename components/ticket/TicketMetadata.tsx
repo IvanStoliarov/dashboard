@@ -1,16 +1,14 @@
 import { CalendarDaysIcon } from '@heroicons/react/24/outline';
 import { formatCreatedAt, formatCreatedAtTitle } from '@/lib/format';
 import TicketStatusBadge from './TicketStatusBadge';
+import Link from 'next/link';
 
 interface TicketMetadataProps {
   createdAt: string;
-  number: number;
+  id: string;
 }
 
-export default function TicketMetadata({
-  createdAt,
-  number,
-}: TicketMetadataProps) {
+export default function TicketMetadata({ createdAt, id }: TicketMetadataProps) {
   return (
     <div className='mb-3 flex flex-wrap items-center gap-2.5'>
       <TicketStatusBadge />
@@ -22,12 +20,13 @@ export default function TicketMetadata({
         <CalendarDaysIcon aria-hidden='true' className='size-3.5' />
         {formatCreatedAt(createdAt)}
       </time>
-      <span
-        title={`Ticket number ${number}`}
+      <Link
+        href={`/ticket/${id}`}
+        title={`Ticket id: ${id}`}
         className='text-xs font-medium tabular-nums text-zinc-300'
       >
-        #{String(number).padStart(2, '0')}
-      </span>
+        #{String(id).padStart(2, '0')}
+      </Link>
     </div>
   );
 }
