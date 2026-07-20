@@ -1,5 +1,6 @@
 'use client';
 
+import { CheckIcon, ChevronDownIcon } from '@heroicons/react/20/solid';
 import { updateTicketAssignee } from '@/lib/actions';
 import { Profile } from '@/lib/types';
 import { useEffect, useId, useRef, useState, useTransition } from 'react';
@@ -97,23 +98,26 @@ export default function AssigneeMultiSelect({
         aria-expanded={open}
         onClick={() => setOpen(current => !current)}
         disabled={isPending}
-        className='border rounded-xs w-full bg-white px-2 py-1 text-left flex items-center justify-between gap-2 disabled:cursor-wait disabled:opacity-60'
+        className='flex min-h-9 w-full items-center justify-between gap-2 rounded-lg border border-zinc-200 bg-white px-3 py-2 text-left text-sm text-zinc-800 shadow-sm transition hover:border-zinc-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-400 focus-visible:ring-offset-1 disabled:cursor-wait disabled:opacity-60'
       >
         <span
-          className={selected.length === 0 ? 'text-neutral-500' : undefined}
+          className={`truncate ${selected.length === 0 ? 'text-zinc-400' : ''}`}
         >
           {displayValue}
         </span>
-        <span aria-hidden='true' className='text-xs text-neutral-500'>
-          ▼
-        </span>
+        <ChevronDownIcon
+          aria-hidden='true'
+          className={`size-4 shrink-0 text-zinc-400 transition-transform ${
+            open ? 'rotate-180' : ''
+          }`}
+        />
       </button>
 
       {open && (
         <ul
           role='listbox'
           aria-multiselectable='true'
-          className='absolute z-10 mt-1 w-full max-h-48 overflow-auto border rounded-xs bg-white shadow-sm'
+          className='absolute z-20 mt-1.5 max-h-52 w-full overflow-auto rounded-xl border border-zinc-200 bg-white p-1.5 shadow-xl shadow-zinc-950/10'
         >
           {users.map(user => {
             const isSelected = selected.includes(user.id);
@@ -124,13 +128,22 @@ export default function AssigneeMultiSelect({
                   type='button'
                   onClick={() => toggleUser(user.id)}
                   disabled={isPending}
-                  className={`w-full cursor-pointer px-2 py-1 text-left disabled:cursor-wait disabled:opacity-60 ${
+                  className={`flex w-full cursor-pointer items-center gap-2.5 rounded-lg px-2.5 py-2 text-left text-sm transition disabled:cursor-wait disabled:opacity-60 ${
                     isSelected
-                      ? 'bg-neutral-200 font-medium text-neutral-950 hover:bg-neutral-200'
-                      : 'hover:bg-neutral-100'
+                      ? 'bg-zinc-100 font-medium text-zinc-950'
+                      : 'text-zinc-600 hover:bg-zinc-50 hover:text-zinc-950'
                   }`}
                 >
-                  {getUserLabel(user)}
+                  <span
+                    className={`flex size-5 shrink-0 items-center justify-center rounded border ${
+                      isSelected
+                        ? 'border-zinc-900 bg-zinc-900 text-white'
+                        : 'border-zinc-300 bg-white text-transparent'
+                    }`}
+                  >
+                    <CheckIcon aria-hidden='true' className='size-3' />
+                  </span>
+                  <span className='truncate'>{getUserLabel(user)}</span>
                 </button>
               </li>
             );
