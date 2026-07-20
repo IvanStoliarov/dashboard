@@ -1,5 +1,5 @@
 import React from 'react';
-import NewTicketForm from '../NewTicketForm';
+import NewTicketForm from '@/components/NewTicketForm';
 import { getAllUsers } from '@/lib/data/profiles';
 
 export default async function NewTicket() {

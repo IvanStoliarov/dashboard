@@ -2,7 +2,7 @@ import { PlusIcon } from '@heroicons/react/24/outline';
 import { redirect } from 'next/navigation';
 import { createClient } from '@/lib/supabase/server';
 import LinkAsButton from '@/components/LinkAsButton';
-import TicketList from './TicketList';
+import TicketList from '@/components/TicketList';
 import { Suspense } from 'react';
 import Spinner from '@/components/Spinner';
 
