@@ -1,5 +1,6 @@
 import 'server-only';
 import { createClient } from '../supabase/server';
+import { Profile } from '../types';
 
 export async function getUserData(id: string) {
   const supabase = await createClient();
@@ -11,4 +12,17 @@ export async function getUserData(id: string) {
     .maybeSingle();
 
   return data;
+}
+
+export async function getAllUsers(): Promise<Profile[] | []> {
+  const supabase = await createClient();
+
+  const { data, error } = await supabase.from('profiles').select('*');
+
+  if (error) {
+    console.log('Something went wrong while fetching users');
+    return [];
+  }
+
+  return data && data?.length > 0 ? data : [];
 }

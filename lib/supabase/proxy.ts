@@ -27,8 +27,11 @@ export async function updateSession(request: NextRequest) {
 
   const { data } = await supabase.auth.getClaims();
   const claims = data?.claims;
+  const isProtectedRoute =
+    request.nextUrl.pathname.startsWith("/dashboard") ||
+    request.nextUrl.pathname.startsWith("/new-ticket");
 
-  if (!claims && request.nextUrl.pathname.startsWith("/dashboard")) {
+  if (!claims && isProtectedRoute) {
     const loginUrl = request.nextUrl.clone();
     loginUrl.pathname = "/login";
     loginUrl.searchParams.set("next", request.nextUrl.pathname);

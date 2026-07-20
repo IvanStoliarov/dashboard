@@ -17,3 +17,12 @@ body {
   color: var(--foreground);
   font-family: var(--font-geist-sans), Arial, Helvetica, sans-serif;
 }
+
+@layer components {
+  input, textarea {
+    @apply border rounded-xs w-full;
+  }
+  select {
+    @apply border rounded-xs;
+  }
+}
