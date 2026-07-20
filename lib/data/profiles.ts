@@ -10,7 +10,6 @@ export async function getUserDataAPI(id: string) {
     .select('email, username')
     .eq('id', id)
     .maybeSingle();
-
   return data;
 }
 

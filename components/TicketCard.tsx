@@ -1,6 +1,6 @@
 import TicketAssigneeList from '@/components/ticket/TicketAssigneeList';
 import TicketStatusBadge from '@/components/ticket/TicketStatusBadge';
-import { getTicketById } from '@/lib/actions';
+import { fetchProfileDataById, getTicketById } from '@/lib/actions';
 import { formatCreatedAtTitle } from '@/lib/format';
 import { notFound } from 'next/navigation';
 import TicketContentForm from './TicketContentForm';
@@ -11,12 +11,21 @@ interface TicketCardProps {
 
 export default async function TicketCard({ id }: TicketCardProps) {
   const ticket = await getTicketById(id);
-
   if (!ticket) notFound();
+
+  const author = ticket?.created_by
+    ? await fetchProfileDataById(ticket?.created_by)
+    : null;
+
+  const updateAuthor = !ticket?.ticket_updated_by
+    ? null
+    : ticket?.ticket_updated_by === ticket?.created_by
+      ? author
+      : await fetchProfileDataById(ticket?.ticket_updated_by);
 
   const metadata = [
     { label: 'Ticket ID', value: ticket.id },
-    { label: 'Created by', value: ticket.created_by },
+    { label: 'Created by', value: author?.username },
     {
       label: 'Created',
       value: formatCreatedAtTitle(ticket.created_at),
@@ -31,7 +40,7 @@ export default async function TicketCard({ id }: TicketCardProps) {
     },
     {
       label: 'Updated by',
-      value: ticket.ticket_updated_by ?? 'Not updated yet',
+      value: updateAuthor?.username ?? 'Not updated yet',
     },
   ];
 
