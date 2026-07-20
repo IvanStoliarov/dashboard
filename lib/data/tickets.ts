@@ -42,19 +42,3 @@ export async function getTicketsAPI() {
 
   return { data, error };
 }
-
-export async function updateTicketAssigneeAPI({
-  ticketId,
-  assignedTo,
-}: {
-  ticketId: Ticket['id'];
-  assignedTo: Profile['id'][];
-}) {
-  const supabase = await createClient();
-  const { error } = await supabase.rpc('update_ticket_assignee', {
-    p_ticket_id: ticketId,
-    p_profile_ids: assignedTo,
-  });
-
-  return { error };
-}

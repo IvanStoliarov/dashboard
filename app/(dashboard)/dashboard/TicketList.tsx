@@ -1,11 +1,9 @@
 import { TicketIcon } from '@heroicons/react/24/outline';
 import Ticket from '@/components/Ticket';
-import { getTickets, updateTicketAssignee } from '@/lib/actions';
-import { getAllUsers } from '@/lib/data/profiles';
-import AssigneeMultiSelect from './AssigneeMultiSelect';
+import { getTickets } from '@/lib/actions';
 
 export default async function TicketList() {
-  const [tickets, users] = await Promise.all([getTickets(), getAllUsers()]);
+  const tickets = await getTickets();
 
   return (
     <section aria-labelledby='tickets-heading'>
@@ -42,31 +40,7 @@ export default async function TicketList() {
         <ul className='grid gap-3'>
           {tickets.map((ticket, index) => (
             <li key={ticket.id}>
-              <Ticket ticket={ticket} number={index + 1}>
-                <form
-                  action={updateTicketAssignee}
-                  className='rounded-xl border border-zinc-200 bg-zinc-50/80 p-3'
-                >
-                  <input type='hidden' name='ticket_id' value={ticket.id} />
-                  <label
-                    className='mb-1.5 block text-xs font-medium text-zinc-500'
-                    htmlFor={`assigned_to_${ticket.id}`}
-                  >
-                    Assignees
-                  </label>
-                  <AssigneeMultiSelect
-                    id={`assigned_to_${ticket.id}`}
-                    name='assigned_to'
-                    users={users}
-                    defaultValue={ticket.ticket_assignees.map(
-                      item => item.profile_id,
-                    )}
-                  />
-                  <p className='mt-1.5 text-[11px] leading-4 text-zinc-400'>
-                    Changes save automatically
-                  </p>
-                </form>
-              </Ticket>
+              <Ticket ticket={ticket} number={index + 1} />
             </li>
           ))}
         </ul>
