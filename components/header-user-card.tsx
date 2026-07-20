@@ -1,9 +1,9 @@
 import { logout } from '@/app/auth/actions';
-import { getUserData } from '@/lib/data/profiles';
+import { fetchProfileDataById } from '@/lib/actions';
 import Link from 'next/link';
 
 export default async function HeaderUserCart({ userId }: { userId: string }) {
-  const profile = await getUserData(userId);
+  const profile = await fetchProfileDataById(userId);
   if (!profile) return null;
   const { username } = profile;
 

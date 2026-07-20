@@ -8,6 +8,7 @@ import {
   getTicketsAPI,
   updateTicketAPI,
 } from './data/tickets';
+import { getAllUsersAPI, getUserDataAPI } from './data/profiles';
 import type { Ticket } from './types';
 import { refresh } from 'next/cache';
 
@@ -90,6 +91,14 @@ export async function getTicketStatuses() {
   const { data, error } = await getTicketStatusesAPI();
   if (error || !data) return [];
   return data;
+}
+
+export async function fetchProfileDataById(id: string) {
+  return getUserDataAPI(id);
+}
+
+export async function fetchAllUsers() {
+  return getAllUsersAPI();
 }
 
 export interface TicketContentFormState {
