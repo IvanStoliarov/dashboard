@@ -16,7 +16,7 @@ export default async function HeaderUserCart({ userId }: { userId: string }) {
         aria-label='Open user menu'
         className='flex h-10 w-10 items-center justify-center rounded-full bg-gray-300'
       >
-        {username.at(0)}
+        {username?.at(0) || 'User'}
       </button>
 
       <div
