@@ -29,6 +29,7 @@ export async function updateSession(request: NextRequest) {
   const claims = data?.claims;
   const isProtectedRoute =
     request.nextUrl.pathname.startsWith("/dashboard") ||
+    request.nextUrl.pathname.startsWith("/ticket") ||
     request.nextUrl.pathname.startsWith("/new-ticket");
 
   if (!claims && isProtectedRoute) {

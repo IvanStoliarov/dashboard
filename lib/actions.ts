@@ -1,10 +1,14 @@
 'use server';
 
-import z from 'zod';
+import z, { success } from 'zod';
 import {
   createTicketAPI,
+  getTicketByIdAPI,
   getTicketsAPI,
+  updateTicketAPI,
 } from './data/tickets';
+import type { Ticket } from './types';
+import { refresh } from 'next/cache';
 
 export interface NewTicketFormState {
   success: boolean;
@@ -73,4 +77,59 @@ export async function getTickets() {
   const { data, error } = await getTicketsAPI();
   if (error || !data) return [];
   return data;
+}
+
+export async function getTicketById(id: Ticket['id']) {
+  const { data, error } = await getTicketByIdAPI(id);
+  if (error || !data) return null;
+  return data;
+}
+
+export interface TicketContentFormState {
+  success: boolean
+  message: string
+  errors?: { [key: string]: string[] } | null;
+}
+
+const updateTicketSchema = z.object({
+  id: z.uuid('Invalid ticket ID'),
+  title: z.string('Not a string').min(5, 'Minimum 5 symbols'),
+  description: z.string('Not a string').min(5, 'Minimum 5 symbols'),
+});
+
+export async function updateTicketContent(prevState: TicketContentFormState, formData: FormData) {
+
+   const values = {
+    id: String(formData.get('id')) || '',
+    title: String(formData.get('title')) || '',
+    description: String(formData.get('description')) || '',
+  };
+
+  const result = updateTicketSchema.safeParse(values);
+  if (result.error) {
+    const errors = z.flattenError(result.error).fieldErrors;
+    return {
+      success: false,
+      message: '',
+      errors
+    }
+  }
+  const { data, error } = await updateTicketAPI(values);
+
+  if (error || !data) {
+    return {
+      success: false,
+      message: "Couldn't update ticket",
+      errors: null,
+    };
+  }
+
+  refresh();
+
+  return {
+    success: true,
+    message: 'Ticket successfully updated',
+    errors: null,
+  }
+
 }

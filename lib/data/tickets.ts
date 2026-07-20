@@ -42,3 +42,45 @@ export async function getTicketsAPI() {
 
   return { data, error };
 }
+
+export async function getTicketByIdAPI(id: Ticket['id']) {
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from('tickets')
+    .select(
+      `
+      *,
+      ticket_assignees (
+        profile_id,
+        profile:profiles (
+          id,
+          username
+        )
+      )
+    `,
+    )
+    .eq('id', id)
+    .single();
+
+  return { data, error };
+}
+
+export async function updateTicketAPI({
+  id,
+  title,
+  description,
+}: {
+  id: Ticket['id'];
+  title: Ticket['title'];
+  description: Ticket['description'];
+}) {
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from('tickets')
+    .update({ title, description })
+    .eq('id', id)
+    .select()
+    .single();
+
+  return { data, error };
+}
