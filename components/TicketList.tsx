@@ -1,7 +1,8 @@
 import TicketsGrid from './TicketsGrid';
 import { Suspense } from 'react';
-import Spinner from './Spinner';
 import TicketsCountLabel from './TicketsCountLabel';
+import TicketsCountLabelSkeleton from './TicketsCountLabelSkeleton';
+import TicketsGridSkeleton from './TicketsGridSkeleton';
 
 export default async function TicketList() {
   return (
@@ -18,12 +19,12 @@ export default async function TicketList() {
             Tickets
           </h1>
         </div>
-        <Suspense fallback={<Spinner />}>
+        <Suspense fallback={<TicketsCountLabelSkeleton />}>
           <TicketsCountLabel />
         </Suspense>
       </div>
 
-      <Suspense fallback={<Spinner />}>
+      <Suspense fallback={<TicketsGridSkeleton />}>
         <TicketsGrid />
       </Suspense>
     </section>
