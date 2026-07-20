@@ -2,16 +2,22 @@ import { CalendarDaysIcon } from '@heroicons/react/24/outline';
 import { formatCreatedAt, formatCreatedAtTitle } from '@/lib/format';
 import TicketStatusBadge from './TicketStatusBadge';
 import Link from 'next/link';
+import type { Ticket } from '@/lib/types';
 
 interface TicketMetadataProps {
   createdAt: string;
   id: string;
+  status: Ticket['status'];
 }
 
-export default function TicketMetadata({ createdAt, id }: TicketMetadataProps) {
+export default function TicketMetadata({
+  createdAt,
+  id,
+  status,
+}: TicketMetadataProps) {
   return (
     <div className='mb-3 flex flex-wrap items-center gap-2.5'>
-      <TicketStatusBadge />
+      <TicketStatusBadge status={status} />
       <time
         dateTime={createdAt}
         title={`Created on ${formatCreatedAtTitle(createdAt)}`}

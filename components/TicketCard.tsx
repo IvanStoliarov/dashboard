@@ -1,4 +1,5 @@
 import TicketAssigneeList from '@/components/ticket/TicketAssigneeList';
+import TicketStatusBadge from '@/components/ticket/TicketStatusBadge';
 import { getTicketById } from '@/lib/actions';
 import { formatCreatedAtTitle } from '@/lib/format';
 import { notFound } from 'next/navigation';
@@ -45,9 +46,7 @@ export default async function TicketCard({ id }: TicketCardProps) {
             <p className='text-sm font-medium text-zinc-500'>Ticket details</p>
             <p className='mt-1 font-mono text-xs text-zinc-400'>{ticket.id}</p>
           </div>
-          <span className='inline-flex rounded-full bg-zinc-100 px-2.5 py-1 text-xs font-medium capitalize text-zinc-600'>
-            {ticket.status.replace('_', ' ')}
-          </span>
+          <TicketStatusBadge status={ticket.status} />
         </div>
       </div>
 
