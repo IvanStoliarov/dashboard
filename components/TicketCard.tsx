@@ -1,9 +1,10 @@
 import TicketAssigneeList from '@/components/ticket/TicketAssigneeList';
-import TicketStatusBadge from '@/components/ticket/TicketStatusBadge';
 import { fetchProfileDataById, getTicketById } from '@/lib/actions';
 import { formatCreatedAtTitle } from '@/lib/format';
 import { notFound } from 'next/navigation';
 import TicketContentForm from './TicketContentForm';
+import StatusSelect from './StatusSelect';
+import StatusButtons from './StatusButtons';
 
 interface TicketCardProps {
   id: string;
@@ -55,7 +56,9 @@ export default async function TicketCard({ id }: TicketCardProps) {
             <p className='text-sm font-medium text-zinc-500'>Ticket details</p>
             <p className='mt-1 font-mono text-xs text-zinc-400'>{ticket.id}</p>
           </div>
-          <TicketStatusBadge status={ticket.status} />
+          <StatusSelect currentStatus={ticket.status}>
+            <StatusButtons ticketId={ticket.id} currentStatus={ticket.status} />
+          </StatusSelect>
         </div>
       </div>
 

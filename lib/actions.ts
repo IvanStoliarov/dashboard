@@ -7,6 +7,7 @@ import {
   getTicketStatusesAPI,
   getTicketsAPI,
   updateTicketAPI,
+  updateTicketStatusAPI,
 } from './data/tickets';
 import { getAllUsersAPI, getUserDataAPI } from './data/profiles';
 import type { Ticket } from './types';
@@ -149,5 +150,40 @@ export async function updateTicketContent(
     success: true,
     message: 'Ticket successfully updated',
     errors: null,
+  };
+}
+
+const updateTicketStatusSchema = z.object({
+  id: z.uuid('Invalid ticket ID'),
+  status: z.enum(['todo', 'in_progress', 'qa', 'done']),
+});
+
+export async function updateTicketStatus(
+  id: Ticket['id'],
+  status: Ticket['status'],
+) {
+  const result = updateTicketStatusSchema.safeParse({ id, status });
+
+  if (!result.success) {
+    return {
+      success: false,
+      message: 'Invalid ticket status update',
+    };
+  }
+
+  const { data, error } = await updateTicketStatusAPI(result.data);
+
+  if (error || !data) {
+    return {
+      success: false,
+      message: "Couldn't update ticket status",
+    };
+  }
+
+  refresh();
+
+  return {
+    success: true,
+    message: 'Ticket status successfully updated',
   };
 }

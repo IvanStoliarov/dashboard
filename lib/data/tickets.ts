@@ -91,3 +91,21 @@ export async function updateTicketAPI({
 
   return { data, error };
 }
+
+export async function updateTicketStatusAPI({
+  id,
+  status,
+}: {
+  id: Ticket['id'];
+  status: Ticket['status'];
+}) {
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from('tickets')
+    .update({ status })
+    .eq('id', id)
+    .select()
+    .single();
+
+  return { data, error };
+}
