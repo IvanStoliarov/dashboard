@@ -1,9 +1,10 @@
 'use server';
 
-import z, { success } from 'zod';
+import z from 'zod';
 import {
   createTicketAPI,
   getTicketByIdAPI,
+  getTicketStatusesAPI,
   getTicketsAPI,
   updateTicketAPI,
 } from './data/tickets';
@@ -82,6 +83,12 @@ export async function getTickets() {
 export async function getTicketById(id: Ticket['id']) {
   const { data, error } = await getTicketByIdAPI(id);
   if (error || !data) return null;
+  return data;
+}
+
+export async function getTicketStatuses() {
+  const { data, error } = await getTicketStatusesAPI();
+  if (error || !data) return [];
   return data;
 }
 

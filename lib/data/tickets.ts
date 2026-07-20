@@ -65,6 +65,13 @@ export async function getTicketByIdAPI(id: Ticket['id']) {
   return { data, error };
 }
 
+export async function getTicketStatusesAPI() {
+  const supabase = await createClient();
+  const { data, error } = await supabase.rpc('get_ticket_statuses');
+
+  return { data, error };
+}
+
 export async function updateTicketAPI({
   id,
   title,
