@@ -19,11 +19,11 @@ export default function StatusButton({
 
   return (
     <button
-      disabled={isPending}
+      disabled={isPending || status === currentStatus}
       type='button'
       role='menuitem'
       onClick={() => onClick(status)}
-      className={`flex w-full items-center gap-2.5 rounded-lg px-3 py-2 text-left text-sm font-medium text-zinc-700 transition-colors hover:bg-zinc-100 hover:text-zinc-950 focus-visible:bg-zinc-100 focus-visible:text-zinc-950 focus-visible:outline-none disabled:cursor-wait disabled:opacity-60 ${currentStatus === status ? 'bg-zinc-100 text-zinc-950' : ''}`}
+      className={`flex w-full items-center gap-2.5 rounded-lg px-3 py-2 text-left text-sm font-medium text-zinc-700 transition-colors hover:bg-zinc-100 hover:text-zinc-950 hover:cursor-pointer disabled:hover:cursor-auto focus-visible:bg-zinc-100 focus-visible:text-zinc-950 focus-visible:outline-none disabled:opacity-60 ${currentStatus === status ? 'bg-zinc-100 text-zinc-950' : ''}`}
     >
       <span className={`size-2 rounded-full ${dotClassName}`} />
       {label}

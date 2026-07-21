@@ -3,6 +3,8 @@ import { formatCreatedAt, formatCreatedAtTitle } from '@/lib/format';
 import TicketStatusBadge from './TicketStatusBadge';
 import Link from 'next/link';
 import type { Ticket } from '@/lib/types';
+import StatusSelect from '../StatusSelect';
+import StatusButtons from '../StatusButtons';
 
 interface TicketMetadataProps {
   createdAt: string;
@@ -17,7 +19,9 @@ export default function TicketMetadata({
 }: TicketMetadataProps) {
   return (
     <div className='mb-3 flex flex-wrap items-center gap-2.5'>
-      <TicketStatusBadge status={status} />
+      <StatusSelect position='left' currentStatus={status}>
+        <StatusButtons ticketId={id} currentStatus={status} />
+      </StatusSelect>
       <time
         dateTime={createdAt}
         title={`Created on ${formatCreatedAtTitle(createdAt)}`}

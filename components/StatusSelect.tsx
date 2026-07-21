@@ -10,22 +10,28 @@ import {
 interface StatusSelectProps {
   currentStatus: Ticket['status'];
   children: React.ReactNode;
+  position?: 'right' | 'left';
 }
 
 export default function StatusSelect({
   currentStatus,
   children,
+  position = 'left',
 }: StatusSelectProps) {
   return (
     <StatusSelectProvider>
-      <StatusSelectContent currentStatus={currentStatus}>
+      <StatusSelectContent position={position} currentStatus={currentStatus}>
         {children}
       </StatusSelectContent>
     </StatusSelectProvider>
   );
 }
 
-function StatusSelectContent({ currentStatus, children }: StatusSelectProps) {
+function StatusSelectContent({
+  currentStatus,
+  children,
+  position,
+}: StatusSelectProps) {
   const { isOpen, close, toggleIsOpen } = useStatusSelect();
   const selectRef = useRef<HTMLDivElement>(null);
 
@@ -48,7 +54,7 @@ function StatusSelectContent({ currentStatus, children }: StatusSelectProps) {
         aria-haspopup='menu'
         aria-label='Change ticket status'
         onClick={toggleIsOpen}
-        className='group inline-flex items-center rounded-full outline-none transition focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2'
+        className='group inline-flex items-center rounded-full outline-none transition focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 hover:cursor-pointer'
       >
         <TicketStatusBadge status={currentStatus} />
       </button>
@@ -56,7 +62,7 @@ function StatusSelectContent({ currentStatus, children }: StatusSelectProps) {
         <div
           role='menu'
           aria-label='Change ticket status'
-          className='absolute right-0 top-[calc(100%+0.5rem)] z-10 min-w-40 rounded-xl border border-zinc-200 bg-white p-1.5 shadow-[0_16px_32px_-16px_rgba(24,24,27,0.35)] [&_ul]:space-y-0.5'
+          className={`absolute top-[calc(100%+0.5rem)] z-10 min-w-40 rounded-xl border border-zinc-200 bg-white p-1.5 shadow-[0_16px_32px_-16px_rgba(24,24,27,0.35)] [&_ul]:space-y-0.5 ${position === 'left' ? 'left-0' : 'right-0'}`}
         >
           {children}
         </div>
