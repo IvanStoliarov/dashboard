@@ -83,11 +83,42 @@ export async function createTicket(
   };
 }
 
-export const getTickets = cache(async () => {
-  const { data, error } = await getTicketsAPI();
-  if (error || !data) return [];
-  return data;
-});
+type TicketSortBy = 'due-to' | 'date';
+type TicketSortDirection = 'asc' | 'desc';
+
+const DEFAULT_TICKET_SORT_BY: TicketSortBy = 'due-to';
+const DEFAULT_TICKET_SORT_DIRECTION: TicketSortDirection = 'asc';
+
+function getTicketSortBy(sortby?: string): TicketSortBy {
+  return sortby === 'date' ? sortby : DEFAULT_TICKET_SORT_BY;
+}
+
+function getTicketSortDirection(sortdir?: string): TicketSortDirection {
+  return sortdir === 'desc' ? sortdir : DEFAULT_TICKET_SORT_DIRECTION;
+}
+
+export const getTickets = cache(
+  async ({ sortby, sortdir }: { sortby?: string; sortdir?: string } = {}) => {
+    const { data, error } = await getTicketsAPI();
+    if (error || !data) return [];
+
+    const resolvedSortBy = getTicketSortBy(sortby);
+    const resolvedSortDirection = getTicketSortDirection(sortdir);
+
+    if (resolvedSortBy === 'date') {
+      return resolvedSortDirection === 'desc' ? data : [...data].reverse();
+    }
+
+    const direction = resolvedSortDirection === 'asc' ? 1 : -1;
+
+    return [...data].sort((ticketA, ticketB) => {
+      if (!ticketA.due_to && !ticketB.due_to) return 0;
+      if (!ticketA.due_to) return 1;
+      if (!ticketB.due_to) return -1;
+      return ticketA.due_to.localeCompare(ticketB.due_to) * direction;
+    });
+  },
+);
 
 export async function getTicketById(id: Ticket['id']) {
   const { data, error } = await getTicketByIdAPI(id);
@@ -167,9 +198,12 @@ export async function updateTicketAssigneeList(
   ticketId: Ticket['id'],
   assigneeList: TicketData['ticket_assignees'],
 ) {
-  const {data, error} = await updateTicketAssigneeListAPI(ticketId, assigneeList);
-  refresh()
-  return {data, error}
+  const { data, error } = await updateTicketAssigneeListAPI(
+    ticketId,
+    assigneeList,
+  );
+  refresh();
+  return { data, error };
 }
 const updateTicketStatusSchema = z.object({
   id: z.uuid('Invalid ticket ID'),

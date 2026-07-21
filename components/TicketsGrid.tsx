@@ -4,10 +4,16 @@ import type { CSSProperties } from 'react';
 import TicketCard from '@/components/TicketCard';
 import { TicketIcon } from '@heroicons/react/24/outline';
 
-export default async function TicketsGrid() {
+export default async function TicketsGrid({
+  sortby,
+  sortdir,
+}: {
+  sortby: string;
+  sortdir: string;
+}) {
   const [statuses, tickets] = await Promise.all([
     getTicketStatuses(),
-    getTickets(),
+    getTickets({ sortby, sortdir }),
   ]);
 
   return (

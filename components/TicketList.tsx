@@ -4,7 +4,13 @@ import TicketsCountLabel from './TicketsCountLabel';
 import TicketsCountLabelSkeleton from './TicketsCountLabelSkeleton';
 import TicketsGridSkeleton from './TicketsGridSkeleton';
 
-export default async function TicketList() {
+export default async function TicketList({
+  sortby = 'due-to',
+  sortdir = 'asc',
+}: {
+  sortby: string | undefined;
+  sortdir: string | undefined;
+}) {
   return (
     <section aria-labelledby='tickets-heading'>
       <div className='mb-5 flex items-end justify-between gap-4'>
@@ -24,8 +30,8 @@ export default async function TicketList() {
         </Suspense>
       </div>
 
-      <Suspense fallback={<TicketsGridSkeleton />}>
-        <TicketsGrid />
+      <Suspense key={sortby + sortdir} fallback={<TicketsGridSkeleton />}>
+        <TicketsGrid sortby={sortby} sortdir={sortdir} />
       </Suspense>
     </section>
   );
