@@ -1,6 +1,6 @@
-import { getTicketStatuses, updateTicketStatus } from '@/lib/actions';
+import { getTicketStatuses } from '@/lib/actions';
 import { Ticket } from '@/lib/types';
-import StatusButton from './StatusButton';
+import StatusButtonsList from './StatusButtonsList';
 
 interface StatusButtonsProps {
   currentStatus: Ticket['status'];
@@ -13,18 +13,10 @@ export default async function StatusButtons({
 }: StatusButtonsProps) {
   const statuses = await getTicketStatuses();
   return (
-    <ul>
-      {statuses
-        .filter(status => status !== currentStatus)
-        .map(status => (
-          <li key={status}>
-            <StatusButton
-              status={status}
-              ticketId={ticketId}
-              onClickHandler={updateTicketStatus}
-            />
-          </li>
-        ))}
-    </ul>
+    <StatusButtonsList
+      currentStatus={currentStatus}
+      statuses={statuses}
+      ticketId={ticketId}
+    />
   );
 }

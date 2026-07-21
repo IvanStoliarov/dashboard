@@ -1,7 +1,7 @@
 'use client';
 import { Ticket } from '@/lib/types';
 import TicketStatusBadge from './ticket/TicketStatusBadge';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef } from 'react';
 import {
   StatusSelectProvider,
   useStatusSelect,
