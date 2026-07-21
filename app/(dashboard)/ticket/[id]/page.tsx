@@ -1,4 +1,4 @@
-import TicketCard from '@/components/TicketCard';
+import TicketDetails from '@/components/TicketDetails';
 
 export default async function TicketPage({
   params,
@@ -6,5 +6,5 @@ export default async function TicketPage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
-  return <TicketCard id={id} />;
+  return <TicketDetails id={id} />;
 }

@@ -6,7 +6,7 @@ const metadataRows = [
   { labelWidth: 'w-20', valueWidth: 'w-3/4' },
 ];
 
-export default function TicketCardSkeleton() {
+export default function TicketDetailsSkeleton() {
   return (
     <section
       aria-busy='true'

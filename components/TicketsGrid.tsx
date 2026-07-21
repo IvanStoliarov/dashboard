@@ -1,7 +1,7 @@
 import { getTickets, getTicketStatuses } from '@/lib/actions';
 import { TICKET_STATUS_CONFIG } from '@/lib/ticket-status';
 import type { CSSProperties } from 'react';
-import Ticket from '@/components/Ticket';
+import TicketCard from '@/components/TicketCard';
 import { TicketIcon } from '@heroicons/react/24/outline';
 
 export default async function TicketsGrid() {
@@ -54,7 +54,7 @@ export default async function TicketsGrid() {
                   .filter(ticket => ticket.status === status)
                   .map(ticket => (
                     <li key={ticket.id}>
-                      <Ticket ticket={ticket} />
+                      <TicketCard ticket={ticket} />
                     </li>
                   ))}
               </ul>

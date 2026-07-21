@@ -1,5 +1,5 @@
-import TicketCardSkeleton from '@/components/TicketCardSkeleton';
+import TicketDetailsSkeleton from '@/components/TicketDetailsSkeleton';
 
 export default function TicketLoading() {
-  return <TicketCardSkeleton />;
+  return <TicketDetailsSkeleton />;
 }
