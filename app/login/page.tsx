@@ -1,6 +1,6 @@
 import { redirect } from "next/navigation";
-import { AuthForm } from "@/components/auth-form";
-import { AuthShell } from "@/components/auth-shell";
+import { AuthForm } from "@/components/AuthForm";
+import { AuthShell } from "@/components/AuthShell";
 import { createClient } from "@/lib/supabase/server";
 
 export default async function LoginPage() {
