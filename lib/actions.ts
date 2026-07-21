@@ -8,6 +8,7 @@ import {
   getTicketsAPI,
   updateTicketAPI,
   updateTicketAssigneeListAPI,
+  updateTicketDueToAPI,
   updateTicketStatusAPI,
 } from './data/tickets';
 import {
@@ -202,5 +203,40 @@ export async function updateTicketStatus(
   return {
     success: true,
     message: 'Ticket status successfully updated',
+  };
+}
+
+const updateTicketDueToSchema = z.object({
+  id: z.uuid('Invalid ticket ID'),
+  dueTo: z.union([z.iso.date('Invalid due date'), z.null()]),
+});
+
+export async function updateTicketDueTo(
+  id: Ticket['id'],
+  dueTo: Ticket['due_to'],
+) {
+  const result = updateTicketDueToSchema.safeParse({ id, dueTo });
+
+  if (!result.success) {
+    return {
+      success: false,
+      message: 'Invalid ticket due date update',
+    };
+  }
+
+  const { data, error } = await updateTicketDueToAPI(result.data);
+
+  if (error || !data) {
+    return {
+      success: false,
+      message: "Couldn't update ticket due date",
+    };
+  }
+
+  refresh();
+
+  return {
+    success: true,
+    message: 'Ticket due date successfully updated',
   };
 }

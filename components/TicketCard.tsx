@@ -13,6 +13,7 @@ export default function TicketCard({ ticket }: TicketCardProps) {
       <div className='min-w-0'>
         <TicketMetadata
           createdAt={ticket.created_at}
+          dueTo={ticket.due_to}
           id={ticket.id}
           status={ticket.status}
         />

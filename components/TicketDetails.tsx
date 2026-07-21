@@ -9,6 +9,7 @@ import TicketContentForm from './TicketContentForm';
 import StatusSelect from './StatusSelect';
 import StatusButtons from './StatusButtons';
 import AssigneesSelect from './AssigneesSelect';
+import CalendarPicker from './CalendarPicker';
 
 interface TicketDetailsProps {
   id: string;
@@ -29,7 +30,6 @@ export default async function TicketDetails({ id }: TicketDetailsProps) {
       : await fetchProfileDataById(ticket?.ticket_updated_by);
 
   const metadata = [
-    { label: 'Ticket ID', value: ticket.id },
     { label: 'Created by', value: author?.username },
     {
       label: 'Created',
@@ -47,6 +47,7 @@ export default async function TicketDetails({ id }: TicketDetailsProps) {
       label: 'Updated by',
       value: updateAuthor?.username ?? 'Not updated yet',
     },
+    { label: 'Ticket ID', value: ticket.id },
   ];
 
   return (
@@ -78,6 +79,18 @@ export default async function TicketDetails({ id }: TicketDetailsProps) {
         <aside className='border-t border-zinc-100 pt-6 lg:border-t-0 lg:border-l lg:pl-6 lg:pt-0'>
           <h2 className='text-sm font-semibold text-zinc-900'>Details</h2>
           <dl className='mt-4 space-y-4 text-sm'>
+            <div>
+              <dt className='text-xs font-medium uppercase tracking-wide text-zinc-400'>
+                Due date
+              </dt>
+              <dd className='mt-1'>
+                <CalendarPicker
+                  ticketId={ticket.id}
+                  initialValue={ticket.due_to}
+                  variant='details'
+                />
+              </dd>
+            </div>
             {metadata.map(item => (
               <div key={item.label}>
                 <dt className='text-xs font-medium uppercase tracking-wide text-zinc-400'>

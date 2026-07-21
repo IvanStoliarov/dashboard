@@ -110,6 +110,24 @@ export async function updateTicketStatusAPI({
   return { data, error };
 }
 
+export async function updateTicketDueToAPI({
+  id,
+  dueTo,
+}: {
+  id: Ticket['id'];
+  dueTo: Ticket['due_to'];
+}) {
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from('tickets')
+    .update({ due_to: dueTo })
+    .eq('id', id)
+    .select()
+    .single();
+
+  return { data, error };
+}
+
 export async function updateTicketAssigneeListAPI(
   ticketId: Ticket['id'],
   assigneeList: TicketData['ticket_assignees'],

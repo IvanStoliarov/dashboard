@@ -25,4 +25,129 @@ body {
   select {
     @apply border rounded-xs;
   }
+
+  .calendar-picker {
+    @apply relative inline-flex min-w-0 flex-col items-start;
+  }
+
+  .calendar-picker .react-calendar {
+    @apply mt-2 w-[min(20rem,calc(100vw-2.5rem))] max-w-full rounded-xl border border-zinc-200 bg-white p-3 text-zinc-700 shadow-[0_16px_32px_-16px_rgba(24,24,27,0.35)];
+    font-family: inherit;
+    line-height: 1.25;
+  }
+
+  .calendar-picker .react-calendar *,
+  .calendar-picker .react-calendar *::before,
+  .calendar-picker .react-calendar *::after {
+    box-sizing: border-box;
+  }
+
+  .calendar-picker .react-calendar button {
+    border: 0;
+    outline: 0;
+  }
+
+  .calendar-picker .react-calendar__navigation {
+    @apply mb-2 flex h-9 gap-1;
+  }
+
+  .calendar-picker .react-calendar__navigation button {
+    @apply min-w-0 rounded-lg bg-transparent text-sm font-medium text-zinc-700 transition-colors;
+  }
+
+  .calendar-picker .react-calendar__navigation button:first-child,
+  .calendar-picker .react-calendar__navigation button:last-child {
+    @apply w-9 shrink-0 text-zinc-400;
+  }
+
+  .calendar-picker .react-calendar__navigation button:nth-child(2),
+  .calendar-picker .react-calendar__navigation button:nth-child(4) {
+    @apply w-9 shrink-0 text-zinc-400;
+  }
+
+  .calendar-picker .react-calendar__navigation button:nth-child(3) {
+    @apply flex-1;
+  }
+
+  .calendar-picker .react-calendar__navigation button:enabled:hover,
+  .calendar-picker .react-calendar__navigation button:enabled:focus-visible {
+    @apply bg-zinc-100 text-zinc-900;
+  }
+
+  .calendar-picker .react-calendar__navigation button:disabled {
+    @apply bg-transparent text-zinc-200;
+  }
+
+  .calendar-picker .react-calendar__month-view__weekdays {
+    @apply mb-1 text-center text-[10px] font-semibold uppercase tracking-[0.08em] text-zinc-400;
+  }
+
+  .calendar-picker .react-calendar__month-view__weekdays__weekday {
+    @apply px-1 py-2;
+  }
+
+  .calendar-picker .react-calendar__month-view__weekdays__weekday abbr {
+    text-decoration: none;
+  }
+
+  .calendar-picker .react-calendar__month-view__days {
+    @apply gap-y-1;
+  }
+
+  .calendar-picker .react-calendar__tile {
+    @apply aspect-square max-w-full rounded-lg bg-transparent p-0 text-center text-xs font-medium text-zinc-700 transition-colors;
+  }
+
+  .calendar-picker .react-calendar__tile:enabled:hover,
+  .calendar-picker .react-calendar__tile:enabled:focus-visible {
+    @apply bg-blue-50 text-blue-700;
+  }
+
+  .calendar-picker .react-calendar__tile:focus-visible,
+  .calendar-picker .react-calendar__navigation button:focus-visible {
+    @apply relative z-10 ring-2 ring-blue-500 ring-offset-1 ring-offset-white;
+  }
+
+  .calendar-picker .react-calendar__tile--now {
+    @apply bg-blue-50 text-blue-700;
+  }
+
+  .calendar-picker .react-calendar__tile--now:enabled:hover,
+  .calendar-picker .react-calendar__tile--now:enabled:focus-visible {
+    @apply bg-blue-100 text-blue-800;
+  }
+
+  .calendar-picker .react-calendar__tile--active,
+  .calendar-picker .react-calendar__tile--hasActive {
+    @apply bg-blue-600 text-white;
+  }
+
+  .calendar-picker .react-calendar__tile--active:enabled:hover,
+  .calendar-picker .react-calendar__tile--active:enabled:focus-visible,
+  .calendar-picker .react-calendar__tile--hasActive:enabled:hover,
+  .calendar-picker .react-calendar__tile--hasActive:enabled:focus-visible {
+    @apply bg-blue-700 text-white;
+  }
+
+  .calendar-picker .react-calendar__month-view__days__day--weekend {
+    @apply text-zinc-700;
+  }
+
+  .calendar-picker .react-calendar__month-view__days__day--neighboringMonth {
+    @apply font-normal text-zinc-300;
+  }
+
+  .calendar-picker .react-calendar__tile:disabled {
+    @apply cursor-not-allowed bg-transparent text-zinc-200;
+  }
+
+  .calendar-picker .react-calendar__tile--active:disabled {
+    @apply bg-zinc-100 text-zinc-400;
+  }
+
+  .calendar-picker .react-calendar__year-view .react-calendar__tile,
+  .calendar-picker .react-calendar__decade-view .react-calendar__tile,
+  .calendar-picker .react-calendar__century-view .react-calendar__tile {
+    @apply aspect-auto p-3;
+  }
 }

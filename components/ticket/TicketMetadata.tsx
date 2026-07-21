@@ -1,19 +1,21 @@
 import { CalendarDaysIcon } from '@heroicons/react/24/outline';
 import { formatCreatedAt, formatCreatedAtTitle } from '@/lib/format';
-import TicketStatusBadge from './TicketStatusBadge';
 import Link from 'next/link';
 import type { Ticket } from '@/lib/types';
 import StatusSelect from '../StatusSelect';
 import StatusButtons from '../StatusButtons';
+import CalendarPicker from '../CalendarPicker';
 
 interface TicketMetadataProps {
   createdAt: string;
+  dueTo: Ticket['due_to'];
   id: string;
   status: Ticket['status'];
 }
 
 export default function TicketMetadata({
   createdAt,
+  dueTo,
   id,
   status,
 }: TicketMetadataProps) {
@@ -22,6 +24,7 @@ export default function TicketMetadata({
       <StatusSelect position='left' currentStatus={status}>
         <StatusButtons ticketId={id} currentStatus={status} />
       </StatusSelect>
+      <CalendarPicker ticketId={id} initialValue={dueTo} />
       <time
         dateTime={createdAt}
         title={`Created on ${formatCreatedAtTitle(createdAt)}`}
