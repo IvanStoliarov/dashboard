@@ -25,3 +25,27 @@ export async function getAllUsersAPI(): Promise<Profile[] | []> {
 
   return data && data?.length > 0 ? data : [];
 }
+
+
+export async function getUsersByNameAPI(
+  name?: string,
+): Promise<Profile[] | []> {
+  const query = name?.trim();
+
+  if (!query) return [];
+
+  const supabase = await createClient();
+
+  const { data, error } = await supabase
+    .from('profiles')
+    .select('*')
+    .or(`username.ilike.%${query}%,email.ilike.%${query}%`)
+    .order('username', { ascending: true });
+
+  if (error) {
+    console.log('Something went wrong while fetching users');
+    return [];
+  }
+
+  return data && data.length > 0 ? data : [];
+}

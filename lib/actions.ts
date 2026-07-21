@@ -7,10 +7,15 @@ import {
   getTicketStatusesAPI,
   getTicketsAPI,
   updateTicketAPI,
+  updateTicketAssigneeListAPI,
   updateTicketStatusAPI,
 } from './data/tickets';
-import { getAllUsersAPI, getUserDataAPI } from './data/profiles';
-import type { Ticket } from './types';
+import {
+  getAllUsersAPI,
+  getUserDataAPI,
+  getUsersByNameAPI,
+} from './data/profiles';
+import type { Ticket, TicketData } from './types';
 import { refresh } from 'next/cache';
 import { cache } from 'react';
 
@@ -103,6 +108,10 @@ export async function fetchAllUsers() {
   return getAllUsersAPI();
 }
 
+export async function fetchUsersByName(name: string) {
+  return getUsersByNameAPI(name);
+}
+
 export interface TicketContentFormState {
   success: boolean;
   message: string;
@@ -153,6 +162,14 @@ export async function updateTicketContent(
   };
 }
 
+export async function updateTicketAssigneeList(
+  ticketId: Ticket['id'],
+  assigneeList: TicketData['ticket_assignees'],
+) {
+  const {data, error} = await updateTicketAssigneeListAPI(ticketId, assigneeList);
+  refresh()
+  return {data, error}
+}
 const updateTicketStatusSchema = z.object({
   id: z.uuid('Invalid ticket ID'),
   status: z.enum(['todo', 'in_progress', 'qa', 'done']),

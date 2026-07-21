@@ -20,8 +20,13 @@ export default function TicketCardSkeleton() {
         <div className='border-b border-zinc-100 px-5 py-5 sm:px-7'>
           <div className='flex flex-wrap items-center justify-between gap-3'>
             <div>
-              <span className='block h-5 w-24 animate-pulse rounded bg-zinc-100' />
-              <span className='mt-2 block h-3 w-52 animate-pulse rounded bg-zinc-100' />
+              <span className='block h-5 w-20 animate-pulse rounded bg-zinc-100' />
+              <div className='mt-4 flex items-center'>
+                <span className='size-7 animate-pulse rounded-full bg-zinc-100' />
+                <span className='-ml-1.5 size-7 animate-pulse rounded-full bg-zinc-100' />
+                <span className='-ml-1.5 size-7 animate-pulse rounded-full bg-zinc-100' />
+                <span className='ml-2.5 h-3 w-20 animate-pulse rounded bg-zinc-100' />
+              </div>
             </div>
             <span className='h-9 w-28 animate-pulse rounded-lg border border-zinc-200 bg-zinc-50' />
           </div>
@@ -53,14 +58,6 @@ export default function TicketCardSkeleton() {
                 </div>
               ))}
             </dl>
-            <div className='mt-6 border-t border-zinc-100 pt-5'>
-              <span className='block h-3 w-20 animate-pulse rounded bg-zinc-100' />
-              <div className='mt-3 flex items-center'>
-                <span className='size-7 animate-pulse rounded-full bg-zinc-100' />
-                <span className='-ml-1.5 size-7 animate-pulse rounded-full bg-zinc-100' />
-                <span className='-ml-1.5 size-7 animate-pulse rounded-full bg-zinc-100' />
-              </div>
-            </div>
           </aside>
         </div>
       </div>

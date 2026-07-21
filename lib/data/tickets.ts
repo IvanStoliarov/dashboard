@@ -1,6 +1,6 @@
 import 'server-only';
 import { createClient } from '../supabase/server';
-import { Profile, Ticket } from '../types';
+import { Profile, Ticket, TicketData } from '../types';
 
 export async function createTicketAPI({
   title,
@@ -106,6 +106,19 @@ export async function updateTicketStatusAPI({
     .eq('id', id)
     .select()
     .single();
+
+  return { data, error };
+}
+
+export async function updateTicketAssigneeListAPI(
+  ticketId: Ticket['id'],
+  assigneeList: TicketData['ticket_assignees'],
+) {
+  const supabase = await createClient();
+  const { data, error } = await supabase.rpc('update_ticket_assignee', {
+    p_ticket_id: ticketId,
+    p_profile_ids: assigneeList.map(({ profile_id }) => profile_id),
+  });
 
   return { data, error };
 }

@@ -2,10 +2,12 @@ import type { TicketAssignee } from '@/lib/types';
 
 interface TicketAssigneeListProps {
   assignees: TicketAssignee[];
+  compact?: boolean;
 }
 
 export default function TicketAssigneeList({
   assignees,
+  compact = false,
 }: TicketAssigneeListProps) {
   if (assignees.length === 0) return null;
 
@@ -15,14 +17,14 @@ export default function TicketAssigneeList({
 
   return (
     <div
-      className='mt-4 flex items-center'
+      className={`${compact ? '' : 'mt-4'} flex min-w-0 items-center`}
       aria-label={`Assigned to ${assigneeNames.join(', ')}`}
     >
       {assignees.slice(0, 4).map((item, assigneeIndex) => (
         <span
           key={item.profile_id}
           title={item.profile.username ?? 'Unnamed user'}
-          className={`flex size-7 items-center justify-center rounded-full border-2 border-white bg-zinc-900 text-[10px] font-semibold uppercase text-white ${
+          className={`flex size-7 shrink-0 items-center justify-center rounded-full border-2 border-white bg-zinc-900 text-[10px] font-semibold uppercase text-white shadow-sm ${
             assigneeIndex > 0 ? '-ml-1.5' : ''
           }`}
         >
@@ -30,13 +32,11 @@ export default function TicketAssigneeList({
         </span>
       ))}
       {assignees.length > 4 && (
-        <span className='-ml-1.5 flex size-7 items-center justify-center rounded-full border-2 border-white bg-zinc-100 text-[10px] font-semibold text-zinc-600'>
+        <span className='-ml-1.5 flex size-7 shrink-0 items-center justify-center rounded-full border-2 border-white bg-zinc-100 text-[10px] font-semibold text-zinc-600 shadow-sm'>
           +{assignees.length - 4}
         </span>
       )}
-      <span className='ml-2.5 truncate text-xs text-zinc-500'>
-        {assigneeNames.join(', ')}
-      </span>
+      {!compact && <span className='ml-2.5 truncate text-xs text-zinc-500'>{assigneeNames.join(', ')}</span>}
     </div>
   );
 }

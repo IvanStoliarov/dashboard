@@ -1,10 +1,14 @@
-import TicketAssigneeList from '@/components/ticket/TicketAssigneeList';
-import { fetchProfileDataById, getTicketById } from '@/lib/actions';
+import {
+  fetchProfileDataById,
+  fetchUsersByName,
+  getTicketById,
+} from '@/lib/actions';
 import { formatCreatedAtTitle } from '@/lib/format';
 import { notFound } from 'next/navigation';
 import TicketContentForm from './TicketContentForm';
 import StatusSelect from './StatusSelect';
 import StatusButtons from './StatusButtons';
+import AssigneesSelect from './AssigneesSelect';
 
 interface TicketCardProps {
   id: string;
@@ -53,8 +57,12 @@ export default async function TicketCard({ id }: TicketCardProps) {
       <div className='border-b border-zinc-100 px-5 py-5 sm:px-7'>
         <div className='flex flex-wrap items-center justify-between gap-3'>
           <div>
-            <p className='text-sm font-medium text-zinc-500'>Ticket details</p>
-            <p className='mt-1 font-mono text-xs text-zinc-400'>{ticket.id}</p>
+            <h2 className='text-sm font-semibold text-zinc-900'>Assignees</h2>
+            <AssigneesSelect
+              ticketId={ticket.id}
+              handleSearch={fetchUsersByName}
+              assigneesList={ticket.ticket_assignees}
+            />
           </div>
           <StatusSelect currentStatus={ticket.status}>
             <StatusButtons ticketId={ticket.id} currentStatus={ticket.status} />
@@ -85,16 +93,6 @@ export default async function TicketCard({ id }: TicketCardProps) {
               </div>
             ))}
           </dl>
-          <div className='mt-6 border-t border-zinc-100 pt-5'>
-            <h2 className='text-xs font-medium uppercase tracking-wide text-zinc-400'>
-              Assignees
-            </h2>
-            {ticket.ticket_assignees.length > 0 ? (
-              <TicketAssigneeList assignees={ticket.ticket_assignees} />
-            ) : (
-              <p className='mt-2 text-sm text-zinc-500'>Unassigned</p>
-            )}
-          </div>
         </aside>
       </div>
     </section>
