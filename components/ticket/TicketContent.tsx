@@ -22,6 +22,13 @@ export default function TicketContent({
       <p className='mt-1.5 line-clamp-2 max-w-2xl text-sm leading-6 text-zinc-500'>
         {description}
       </p>
+      <Link
+        href={`/ticket/${id}`}
+        title={`Ticket id: ${id}`}
+        className='text-xs font-medium tabular-nums text-zinc-300 hover:underline'
+      >
+        #{String(id).padStart(2, '0')}
+      </Link>
     </>
   );
 }

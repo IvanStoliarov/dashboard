@@ -1,4 +1,5 @@
 'use client';
+import { ChevronDownIcon } from '@heroicons/react/20/solid';
 import { Ticket } from '@/lib/types';
 import TicketStatusBadge from './ticket/TicketStatusBadge';
 import { useEffect, useRef } from 'react';
@@ -54,9 +55,13 @@ function StatusSelectContent({
         aria-haspopup='menu'
         aria-label='Change ticket status'
         onClick={toggleIsOpen}
-        className='group inline-flex items-center rounded-full outline-none transition focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 hover:cursor-pointer'
+        className={`group inline-flex items-center gap-1.5 rounded-lg border bg-white px-1.5 py-1 outline-none transition hover:cursor-pointer hover:border-zinc-400 hover:shadow-sm focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 ${isOpen ? 'border-zinc-400 shadow-sm ring-2 ring-zinc-200' : 'border-zinc-200'}`}
       >
         <TicketStatusBadge status={currentStatus} />
+        <ChevronDownIcon
+          aria-hidden='true'
+          className={`size-4 text-zinc-400 transition-transform group-hover:text-zinc-600 ${isOpen ? 'rotate-180 text-zinc-600' : ''}`}
+        />
       </button>
       {isOpen && (
         <div
