@@ -1,5 +1,6 @@
 import { logout } from '@/app/auth/actions';
 import { fetchProfileDataById } from '@/lib/actions';
+import { ChevronDownIcon } from '@heroicons/react/24/outline';
 import Link from 'next/link';
 
 export default async function HeaderUserCard({ userId }: { userId: string }) {
@@ -22,16 +23,10 @@ export default async function HeaderUserCard({ userId }: { userId: string }) {
           {initial}
         </span>
         <span className='max-w-32 truncate'>{displayName}</span>
-        <svg
+        <ChevronDownIcon
           aria-hidden='true'
           className='h-4 w-4 text-zinc-400 transition group-hover:text-zinc-600'
-          fill='none'
-          viewBox='0 0 24 24'
-          stroke='currentColor'
-          strokeWidth='2'
-        >
-          <path strokeLinecap='round' strokeLinejoin='round' d='m6 9 6 6 6-6' />
-        </svg>
+        />
       </button>
 
       <div
