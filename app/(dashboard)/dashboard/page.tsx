@@ -31,9 +31,7 @@ export default async function DashboardPage() {
           New ticket
         </LinkAsButton>
       </section>
-      <Suspense fallback={<Spinner />}>
-        <TicketList />
-      </Suspense>
+      <TicketList />
     </div>
   );
 }
