@@ -25,17 +25,19 @@ export default function StatusButtonsList({
   }
 
   return (
-    <ul aria-busy={isPending}>
-      {statuses.map(status => (
-        <li key={status}>
-          <StatusButton
-            currentStatus={currentStatus}
-            isPending={isPending}
-            onClick={updateStatus}
-            status={status}
-          />
-        </li>
-      ))}
-    </ul>
+    <div aria-busy={isPending}>
+      <ul role='none'>
+        {statuses.map(status => (
+          <li role='none' key={status}>
+            <StatusButton
+              currentStatus={currentStatus}
+              isPending={isPending}
+              onClick={updateStatus}
+              status={status}
+            />
+          </li>
+        ))}
+      </ul>
+    </div>
   );
 }

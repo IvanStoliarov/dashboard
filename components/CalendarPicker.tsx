@@ -12,6 +12,7 @@ interface CalendarPickerProps {
   ticketId?: string;
   initialValue: string | null;
   variant?: 'inline' | 'details';
+  describedBy?: string;
 }
 
 type ValuePiece = Date | null;
@@ -26,6 +27,7 @@ export default function CalendarPicker({
   ticketId,
   initialValue,
   variant = 'inline',
+  describedBy,
 }: CalendarPickerProps) {
   const [value, setValue] = useState<Value>(
     initialValue ? parseDueDate(initialValue) : null,
@@ -40,6 +42,9 @@ export default function CalendarPicker({
     value instanceof Date ? format(value, 'yyyy-MM-dd') : null;
   const hasChanged = initialDate !== selectedDate;
   const valueToShow = newValue || initialDate;
+  const triggerLabel = valueToShow
+    ? `Change due date, currently ${format(parseDueDate(valueToShow), 'MMMM d, yyyy')}`
+    : 'Set due date';
 
   function reset() {
     setSuccess(true);
@@ -62,35 +67,37 @@ export default function CalendarPicker({
   }
   return (
     <Modal onCloseCallback={reset}>
-      <Modal.Trigger>
-        <>
-          <input type='hidden' name='due_to_date' value={valueToShow || ''} />
-          <span
-            className={
-              variant === 'details'
-                ? 'group inline-flex w-full items-center gap-3 py-1 text-left text-sm text-zinc-600'
-                : 'group inline-flex items-center gap-1.5 text-xs text-zinc-500'
-            }
-          >
-            <span className='inline-flex items-center gap-1.5'>
-              <CalendarDaysIcon aria-hidden='true' className='size-3.5' />
-              <span className='font-medium text-zinc-600'>Due</span>
-            </span>
-            <span className='inline-flex items-center gap-1.5 rounded-md border border-zinc-200 bg-white px-2 py-1 font-medium text-zinc-700 shadow-xs transition-colors hover:border-zinc-300 hover:bg-zinc-50 hover:text-zinc-900'>
-              <time dateTime={valueToShow ?? undefined}>
-                {valueToShow
-                  ? format(parseDueDate(valueToShow), 'MMM d, yyyy')
-                  : 'Set due date'}
-              </time>
-              <ChevronDownIcon
-                aria-hidden='true'
-                className='size-3.5 text-zinc-400'
-              />
-            </span>
+      <input
+        type='hidden'
+        name='due_to_date'
+        value={valueToShow || ''}
+      />
+      <Modal.Trigger ariaLabel={triggerLabel} ariaDescribedBy={describedBy}>
+        <span
+          className={
+            variant === 'details'
+              ? 'group inline-flex w-full items-center gap-3 py-1 text-left text-sm text-zinc-600'
+              : 'group inline-flex items-center gap-1.5 text-xs text-zinc-500'
+          }
+        >
+          <span className='inline-flex items-center gap-1.5'>
+            <CalendarDaysIcon aria-hidden='true' className='size-3.5' />
+            <span className='font-medium text-zinc-700'>Due</span>
           </span>
-        </>
+          <span className='inline-flex items-center gap-1.5 rounded-md border border-zinc-200 bg-white px-2 py-1 font-medium text-zinc-700 shadow-xs transition-colors hover:border-zinc-300 hover:bg-zinc-50 hover:text-zinc-900'>
+            <time dateTime={valueToShow ?? undefined}>
+              {valueToShow
+                ? format(parseDueDate(valueToShow), 'MMM d, yyyy')
+                : 'Set due date'}
+            </time>
+            <ChevronDownIcon
+              aria-hidden='true'
+              className='size-3.5 text-zinc-500'
+            />
+          </span>
+        </span>
       </Modal.Trigger>
-      <Modal.Content>
+      <Modal.Content ariaLabel='Choose a due date'>
         {({ closeModal }) => (
           <div className='calendar-picker'>
             <div>

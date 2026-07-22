@@ -1,7 +1,6 @@
 'use client';
 
 import {
-  use,
   useDeferredValue,
   useEffect,
   useState,
@@ -18,6 +17,7 @@ interface AssigneeSearchProps {
   handleSearch: HandleSearchAssignee;
   asFormElement: boolean;
   asFilter: boolean;
+  inputRef?: React.RefObject<HTMLInputElement | null>;
 }
 
 type User = {
@@ -41,6 +41,7 @@ export default function AssigneeSearch({
   handleSearch,
   asFormElement,
   asFilter,
+  inputRef,
 }: AssigneeSearchProps) {
   const {
     assigneesList,
@@ -144,17 +145,18 @@ export default function AssigneeSearch({
           className='pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-zinc-400'
         />
         <input
+          ref={inputRef}
           id='assignee-search'
           name='query'
           value={query}
           onChange={e => setQuery(e.target.value)}
           type='search'
           placeholder='Search by name or email'
+          aria-describedby='assignee-search-status'
           className='h-9 rounded-lg border-zinc-200 bg-zinc-50 pl-9 pr-3 text-sm placeholder:text-zinc-400 focus:border-blue-500 focus:bg-white focus:ring-2 focus:ring-blue-500/20'
         />
       </div>
       <ul
-        aria-live='polite'
         className={`flex max-h-44 flex-col gap-0.5 overflow-y-auto ${isPending ? 'opacity-40' : ''}`}
       >
         {userList}
@@ -164,6 +166,13 @@ export default function AssigneeSearch({
           </li>
         )}
       </ul>
+      <p id='assignee-search-status' className='sr-only' role='status' aria-live='polite'>
+        {isPending
+          ? 'Searching teammates'
+          : query.length > 0
+            ? `${users.length} teammate${users.length === 1 ? '' : 's'} found`
+            : 'Type a name or email to search teammates'}
+      </p>
       {assigneeListChanged && !asFormElement && (
         <div className='flex gap-2'>
           <Button

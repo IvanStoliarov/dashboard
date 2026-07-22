@@ -3,7 +3,7 @@
 import { ChevronDownIcon } from '@heroicons/react/20/solid';
 import { ArrowDownIcon, ArrowUpIcon } from '@heroicons/react/24/outline';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
-import { ChangeEvent, useState } from 'react';
+import { ChangeEvent } from 'react';
 
 export default function SortBy() {
   const router = useRouter();
@@ -24,7 +24,7 @@ export default function SortBy() {
     } else {
       params.set('sortby', value);
     }
-    router.push(`/dashboard?${params}`);
+    router.push(`${pathName}?${params}`);
   }
 
   function handleChangeDirection() {
@@ -64,13 +64,15 @@ export default function SortBy() {
         />
       </div>
       <button
+        type='button'
         onClick={handleChangeDirection}
-        className='cursor-pointer px-1 h-9'
+        aria-label={`Sort ${currentSortDirection === 'asc' ? 'ascending' : 'descending'}; activate to change direction`}
+        className='h-9 rounded-md px-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600 focus-visible:ring-offset-2'
       >
         {currentSortDirection === 'asc' ? (
-          <ArrowDownIcon className='size-4' />
+          <ArrowDownIcon aria-hidden='true' className='size-4' />
         ) : (
-          <ArrowUpIcon className='size-4' />
+          <ArrowUpIcon aria-hidden='true' className='size-4' />
         )}
       </button>
     </div>
