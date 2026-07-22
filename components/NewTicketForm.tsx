@@ -26,7 +26,7 @@ export default function NewTicketForm() {
   );
 
   return (
-    <form action={formAction} className='mt-8 space-y-6'>
+    <form action={formAction} className='mt-8 space-y-6' aria-busy={isPending}>
       <div>
         <label
           htmlFor='title'
@@ -46,7 +46,7 @@ export default function NewTicketForm() {
           className='h-11 w-full rounded-lg border border-zinc-300 bg-white px-3 text-sm text-zinc-950 outline-none transition placeholder:text-zinc-400 focus:border-zinc-950 focus:ring-2 focus:ring-zinc-950/10 disabled:cursor-not-allowed disabled:bg-zinc-50 disabled:opacity-70'
         />
         {state.errors?.title && (
-          <div id='title-error' className='mt-2 space-y-1'>
+          <div id='title-error' className='mt-2 space-y-1' role='alert'>
             {state.errors.title.map((message, index) => (
               <p className='text-sm text-red-600' key={`${message}-${index}`}>
                 {message}
@@ -77,7 +77,7 @@ export default function NewTicketForm() {
           className='w-full resize-y rounded-lg border border-zinc-300 bg-white px-3 py-2.5 text-sm leading-6 text-zinc-950 outline-none transition placeholder:text-zinc-400 focus:border-zinc-950 focus:ring-2 focus:ring-zinc-950/10 disabled:cursor-not-allowed disabled:bg-zinc-50 disabled:opacity-70'
         />
         {state.errors?.description && (
-          <div id='description-error' className='mt-2 space-y-1'>
+          <div id='description-error' className='mt-2 space-y-1' role='alert'>
             {state.errors.description.map((message, index) => (
               <p className='text-sm text-red-600' key={`${message}-${index}`}>
                 {message}
@@ -99,9 +99,10 @@ export default function NewTicketForm() {
             state.errors?.dueToDate ? null : state.dueToDate || null
           }
           ticketId=''
+          describedBy={state.errors?.dueToDate ? 'due-date-error' : undefined}
         />
         {state.errors?.dueToDate && (
-          <div className='mt-2 space-y-1' role='alert'>
+          <div id='due-date-error' className='mt-2 space-y-1' role='alert'>
             {state.errors.dueToDate.map((message, index) => (
               <p className='text-sm text-red-600' key={`${message}-${index}`}>
                 {message}

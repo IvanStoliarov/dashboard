@@ -59,7 +59,7 @@ function TicketContentFormFields({
   }
 
   return (
-    <form action={formAction}>
+    <form action={formAction} aria-busy={isPending}>
       <input type='hidden' name='id' value={ticket.id} />
       <div>
         <label htmlFor='title' className='text-sm font-medium text-zinc-800'>
@@ -72,10 +72,12 @@ function TicketContentFormFields({
           id='title'
           onChange={e => setTitle(e.target.value)}
           value={title}
-          className='mt-2 rounded-lg border-zinc-200 px-3 py-2 text-sm text-zinc-900 outline-none transition focus:border-zinc-400 focus:ring-2 focus:ring-zinc-100'
+          aria-invalid={Boolean(state.errors?.title)}
+          aria-describedby={state.errors?.title ? 'ticket-title-error' : undefined}
+          className='mt-2 rounded-lg border-zinc-300 px-3 py-2 text-sm text-zinc-900 outline-none transition focus:border-zinc-700 focus:ring-2 focus:ring-blue-200'
         />
         {state?.errors?.title && (
-          <p className='text-red-500'>{state.errors.title}</p>
+          <p id='ticket-title-error' role='alert' className='text-red-600'>{state.errors.title}</p>
         )}
       </div>
       <div>
@@ -92,10 +94,12 @@ function TicketContentFormFields({
           rows={7}
           onChange={e => setDescription(e.target.value)}
           value={description}
-          className='mt-2 resize-none rounded-lg border-zinc-200 px-3 py-2 text-sm leading-6 text-zinc-900 outline-none transition focus:border-zinc-400 focus:ring-2 focus:ring-zinc-100'
+          aria-invalid={Boolean(state.errors?.description)}
+          aria-describedby={state.errors?.description ? 'ticket-description-error' : undefined}
+          className='mt-2 resize-none rounded-lg border-zinc-300 px-3 py-2 text-sm leading-6 text-zinc-900 outline-none transition focus:border-zinc-700 focus:ring-2 focus:ring-blue-200'
         />
         {state?.errors?.description && (
-          <p className='text-red-500'>{state.errors.description}</p>
+          <p id='ticket-description-error' role='alert' className='text-red-600'>{state.errors.description}</p>
         )}
       </div>
       {(ticket.title !== title || ticket.description !== description) && (
@@ -116,7 +120,7 @@ function TicketContentFormFields({
       {showMessage && state.message && (
         <p
           role={state.success ? 'status' : 'alert'}
-          className={state.success ? 'text-green-600' : 'text-red-500'}
+          className={state.success ? 'text-emerald-700' : 'text-red-600'}
         >
           {state.message}
         </p>

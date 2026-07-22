@@ -42,12 +42,12 @@ export default async function TicketList({
           <p className='mb-1 text-xs font-semibold uppercase tracking-[0.16em] text-zinc-400'>
             Workspace
           </p>
-          <h1
+          <h2
             id='tickets-heading'
             className='text-2xl font-semibold tracking-tight text-zinc-950'
           >
             Tickets
-          </h1>
+          </h2>
         </div>
         <Suspense fallback={<TicketsCountLabelSkeleton />}>
           <TicketsCountLabel filterbyuser={filterbyuser} />

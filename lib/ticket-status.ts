@@ -9,7 +9,7 @@ interface TicketStatusConfig {
 export const TICKET_STATUS_CONFIG = {
   todo: {
     label: 'To do',
-    badgeClassName: 'bg-zinc-100 text-zinc-600',
+    badgeClassName: 'bg-zinc-100 text-zinc-700',
     dotClassName: 'bg-zinc-500',
   },
   in_progress: {

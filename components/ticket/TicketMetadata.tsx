@@ -1,6 +1,5 @@
 import { CalendarDaysIcon } from '@heroicons/react/24/outline';
 import { formatCreatedAt, formatCreatedAtTitle } from '@/lib/format';
-import Link from 'next/link';
 import type { Ticket } from '@/lib/types';
 import StatusSelect from '../StatusSelect';
 import StatusButtons from '../StatusButtons';
@@ -30,11 +29,10 @@ export default function TicketMetadata({
       <time
         dateTime={createdAt}
         title={`Created on ${formatCreatedAtTitle(createdAt)}`}
-        className='inline-flex items-center gap-1.5 text-xs text-zinc-400'
+        className='inline-flex items-center gap-1.5 text-xs text-zinc-600'
       >
         <CalendarDaysIcon aria-hidden='true' className='size-3.5' />
-        <span>Created</span>
-        {formatCreatedAt(createdAt)}
+        <span>Created {formatCreatedAt(createdAt)}</span>
       </time>
     </div>
   );

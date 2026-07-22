@@ -2,9 +2,9 @@ import Link from "next/link";
 
 export default function Home() {
   return (
-    <main className="min-h-screen bg-zinc-50 px-4 py-6 sm:px-6">
+    <main id="main-content" className="min-h-screen bg-zinc-50 px-4 py-6 sm:px-6">
       <div className="mx-auto max-w-6xl">
-        <nav className="flex items-center justify-between">
+        <nav aria-label="Primary navigation" className="flex items-center justify-between">
           <span className="text-sm font-semibold tracking-tight text-zinc-950">
             Dashboard
           </span>

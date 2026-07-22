@@ -3,7 +3,6 @@ import { redirect } from 'next/navigation';
 import { createClient } from '@/lib/supabase/server';
 import LinkAsButton from '@/components/LinkAsButton';
 import TicketList from '@/components/TicketList';
-import SortBy from '@/components/SortBy';
 
 export default async function DashboardPage({
   searchParams,
@@ -27,9 +26,9 @@ export default async function DashboardPage({
     <div>
       <section className='mb-8 flex flex-col justify-between gap-4 border-b border-zinc-100 pb-7 sm:flex-row sm:items-center'>
         <div>
-          <h2 className='text-lg font-semibold tracking-tight text-zinc-950'>
+          <h1 className='text-lg font-semibold tracking-tight text-zinc-950'>
             Team workspace
-          </h2>
+          </h1>
           <p className='mt-1 text-sm text-zinc-500'>
             Keep work moving and ownership clear.
           </p>

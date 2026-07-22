@@ -24,10 +24,10 @@ export default function TicketContent({
       </p>
       <Link
         href={`/ticket/${id}`}
-        title={`Ticket id: ${id}`}
-        className='text-xs font-medium tabular-nums text-zinc-300 hover:underline'
+        aria-label={`Open ticket ${id}`}
+        className='text-xs font-medium tabular-nums text-zinc-600 hover:underline focus-visible:rounded-sm'
       >
-        #{String(id).padStart(2, '0')}
+        Ticket #{String(id).padStart(2, '0')}
       </Link>
     </>
   );

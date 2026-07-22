@@ -14,7 +14,7 @@ export function AuthForm({ mode }: { mode: AuthMode }) {
   const isLogin = mode === 'login';
 
   return (
-    <form action={formAction} className='mt-8 space-y-5' noValidate>
+    <form action={formAction} className='mt-8 space-y-5' noValidate aria-busy={isPending}>
       {!isLogin && (
         <div>
           <label
@@ -40,7 +40,7 @@ export function AuthForm({ mode }: { mode: AuthMode }) {
             placeholder='Firstname Lastname'
           />
           {state.errors?.username && (
-            <p id='username-error' className='mt-2 text-sm text-red-600'>
+            <p id='username-error' className='mt-2 text-sm text-red-600' role='alert'>
               {state.errors.username}
             </p>
           )}
@@ -66,7 +66,7 @@ export function AuthForm({ mode }: { mode: AuthMode }) {
           placeholder='you@example.com'
         />
         {state.errors?.email && (
-          <p id='email-error' className='mt-2 text-sm text-red-600'>
+            <p id='email-error' className='mt-2 text-sm text-red-600' role='alert'>
             {state.errors.email}
           </p>
         )}
@@ -94,7 +94,7 @@ export function AuthForm({ mode }: { mode: AuthMode }) {
           placeholder='At least 6 characters'
         />
         {state.errors?.password && (
-          <p id='password-error' className='mt-2 text-sm text-red-600'>
+            <p id='password-error' className='mt-2 text-sm text-red-600' role='alert'>
             {state.errors.password}
           </p>
         )}
@@ -112,6 +112,7 @@ export function AuthForm({ mode }: { mode: AuthMode }) {
       <button
         type='submit'
         disabled={isPending}
+        aria-disabled={isPending}
         className='mt-2 flex h-11 w-full items-center justify-center rounded-lg bg-zinc-950 px-4 text-sm font-medium text-white transition hover:bg-zinc-800 disabled:cursor-not-allowed disabled:opacity-60'
       >
         {isPending

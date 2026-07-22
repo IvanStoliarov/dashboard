@@ -20,6 +20,7 @@ export default function TicketAssigneeList({
   return (
     <div
       className={`${compact ? '' : 'mt-4'} flex min-w-0 items-center`}
+      role='group'
       aria-label={`Assigned to ${assigneeNames.join(', ')}`}
       title={assigneeNames.join(', ')}
     >
@@ -31,16 +32,16 @@ export default function TicketAssigneeList({
             assigneeIndex > 0 ? '-ml-1.5' : ''
           }`}
         >
-          {(item.profile.username ?? '?').slice(0, 2)}
+          <span aria-hidden='true'>{(item.profile.username ?? '?').slice(0, 2)}</span>
         </span>
       ))}
       {assignees.length > 4 && (
         <span className='-ml-1.5 flex size-7 shrink-0 items-center justify-center rounded-full border-2 border-white bg-zinc-100 text-[10px] font-semibold text-zinc-600 shadow-sm'>
-          +{assignees.length - 4}
+          <span aria-hidden='true'>+{assignees.length - 4}</span>
         </span>
       )}
       {!compact && (
-        <span className='ml-2.5 truncate text-xs text-zinc-500'>
+        <span className='ml-2.5 truncate text-xs text-zinc-600'>
           {assigneeNamesToShow}
         </span>
       )}

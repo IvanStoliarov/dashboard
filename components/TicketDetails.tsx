@@ -56,6 +56,7 @@ export default async function TicketDetails({ id }: TicketDetailsProps) {
       className='mx-auto max-w-4xl rounded-2xl border border-zinc-200 bg-white shadow-[0_12px_32px_-20px_rgba(0,0,0,0.25)]'
     >
       <div className='border-b border-zinc-100 px-5 py-5 sm:px-7'>
+        <h1 className='sr-only'>Ticket details</h1>
         <div className='flex flex-wrap items-center justify-between gap-3'>
           <div>
             <h2 className='text-sm font-semibold text-zinc-900'>Assignees</h2>

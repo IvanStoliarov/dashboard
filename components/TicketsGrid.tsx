@@ -28,7 +28,7 @@ export default async function TicketsGrid({
           <h2 className='text-sm font-semibold text-zinc-900'>
             No tickets yet
           </h2>
-          <p className='mx-auto mt-1 max-w-sm text-sm leading-6 text-zinc-500'>
+          <p className='mx-auto mt-1 max-w-sm text-sm leading-6 text-zinc-600'>
             Create your first ticket to start tracking work with your team.
           </p>
         </div>
@@ -50,7 +50,7 @@ export default async function TicketsGrid({
                 >
                   {TICKET_STATUS_CONFIG[status].label}
                 </h2>
-                <span className='rounded-full bg-white px-2 py-0.5 text-xs font-medium tabular-nums text-zinc-500 shadow-sm ring-1 ring-zinc-200'>
+                <span aria-label={`${tickets.filter(ticket => ticket.status === status).length} tickets`} className='rounded-full bg-white px-2 py-0.5 text-xs font-medium tabular-nums text-zinc-600 shadow-sm ring-1 ring-zinc-200'>
                   {tickets.filter(ticket => ticket.status === status).length}
                 </span>
               </div>
