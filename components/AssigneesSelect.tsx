@@ -1,10 +1,10 @@
 'use client';
-import React from 'react';
 import { ChevronDownIcon } from '@heroicons/react/24/outline';
 import AssigneesContext, { useAssignees } from './AssigneesContext';
 import { TicketData } from '@/lib/types';
 import TicketAssigneeList from './ticket/TicketAssigneeList';
 import AssigneeSearch from './AssigneeSearch';
+import useOutsideClick from '@/hooks/useOutsideClick';
 
 export type HandleSearchAssignee = (name: string) => Promise<
   | []
@@ -20,6 +20,8 @@ interface AssigneesSelectProps {
   handleSearch: HandleSearchAssignee;
   ticketId: TicketData['id'];
   asFormElement?: boolean;
+  label?: string;
+  asFilter?: boolean;
 }
 
 export default function AssigneesSelect({
@@ -27,12 +29,16 @@ export default function AssigneesSelect({
   handleSearch,
   ticketId,
   asFormElement = false,
+  label,
+  asFilter = false,
 }: AssigneesSelectProps) {
   return (
     <AssigneesContext initialAssigneesList={assigneesList} ticketId={ticketId}>
       <AssigneesSelectContent
+        asFilter={asFilter}
         asFormElement={asFormElement}
         handleSearch={handleSearch}
+        label={label}
       />
     </AssigneesContext>
   );
@@ -41,16 +47,33 @@ export default function AssigneesSelect({
 interface AssigneesSelectContentProps {
   handleSearch: HandleSearchAssignee;
   asFormElement: boolean;
+  label?: string;
+  asFilter: boolean;
 }
 
 function AssigneesSelectContent({
   handleSearch,
   asFormElement,
+  label,
+  asFilter,
 }: AssigneesSelectContentProps) {
-  const { isOpen, toggleOpen, assigneesList, addOrRemoveAssignee } =
+  const { isOpen, toggleOpen, assigneesList, addOrRemoveAssignee, close } =
     useAssignees();
+
+  const ref = useOutsideClick<HTMLDivElement>(close, false);
   return (
-    <div className='relative mt-3 inline-flex'>
+    <div
+      ref={ref}
+      className={`relative inline-flex gap-2 ${asFilter ? 'flex-col items-start sm:flex-row sm:items-center' : 'items-center'}`}
+    >
+      {label && (
+        <label
+          htmlFor='button'
+          className='block text-xs font-medium uppercase tracking-[0.08em] text-zinc-400'
+        >
+          {label}
+        </label>
+      )}
       {assigneesList.map(user => (
         <input
           key={user.profile_id}
@@ -60,6 +83,7 @@ function AssigneesSelectContent({
         />
       ))}
       <button
+        id='button'
         type='button'
         onClick={toggleOpen}
         aria-expanded={isOpen}
@@ -75,7 +99,7 @@ function AssigneesSelectContent({
           </span>
         )}
         <span>
-          {assigneesList.length > 0 ? 'Edit assignees' : 'Assign people'}
+          {assigneesList.length > 0 ? 'Edit assignees' : 'Assigned people'}
         </span>
         <ChevronDownIcon
           aria-hidden='true'
@@ -86,7 +110,7 @@ function AssigneesSelectContent({
         <div
           role='dialog'
           aria-label='Manage ticket assignees'
-          className='absolute top-[calc(100%+0.5rem)] left-0 z-20 w-[min(16rem,calc(100vw-2.5rem))] overflow-hidden rounded-xl border border-zinc-200 bg-white shadow-[0_16px_32px_-16px_rgba(24,24,27,0.35)]'
+          className='absolute top-[calc(100%+0.5rem)] right-0 z-20 w-[min(16rem,calc(100vw-2.5rem))] overflow-hidden rounded-xl border border-zinc-200 bg-white shadow-[0_16px_32px_-16px_rgba(24,24,27,0.35)]'
         >
           <div className='border-b border-zinc-100 px-4 py-3'>
             <p className='text-sm font-semibold text-zinc-900'>Assign people</p>
@@ -125,6 +149,7 @@ function AssigneesSelectContent({
             <AssigneeSearch
               asFormElement={asFormElement}
               handleSearch={handleSearch}
+              asFilter={asFilter}
             />
           </div>
         </div>

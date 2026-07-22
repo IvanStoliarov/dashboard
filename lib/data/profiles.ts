@@ -26,6 +26,24 @@ export async function getAllUsersAPI(): Promise<Profile[] | []> {
   return data && data?.length > 0 ? data : [];
 }
 
+export async function getUsersByIdsAPI(ids: string[]): Promise<Profile[] | []> {
+  if (ids.length === 0) return [];
+
+  const supabase = await createClient();
+
+  const { data, error } = await supabase
+    .from('profiles')
+    .select('*')
+    .in('id', ids);
+
+  if (error) {
+    console.log('Something went wrong while fetching users');
+    return [];
+  }
+
+  return data && data.length > 0 ? data : [];
+}
+
 
 export async function getUsersByNameAPI(
   name?: string,

@@ -1,15 +1,23 @@
 'use client';
 
-import { useDeferredValue, useEffect, useState, useTransition } from 'react';
+import {
+  use,
+  useDeferredValue,
+  useEffect,
+  useState,
+  useTransition,
+} from 'react';
 import { MagnifyingGlassIcon } from '@heroicons/react/24/outline';
 import { HandleSearchAssignee } from './AssigneesSelect';
 import { useAssignees } from './AssigneesContext';
 import Button from './Button';
 import { TicketAssignee } from '@/lib/types';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 
 interface AssigneeSearchProps {
   handleSearch: HandleSearchAssignee;
   asFormElement: boolean;
+  asFilter: boolean;
 }
 
 type User = {
@@ -32,6 +40,7 @@ const getData = async (searchQuery: string, promise: HandleSearchAssignee) => {
 export default function AssigneeSearch({
   handleSearch,
   asFormElement,
+  asFilter,
 }: AssigneeSearchProps) {
   const {
     assigneesList,
@@ -47,6 +56,9 @@ export default function AssigneeSearch({
   const [query, setQuery] = useState('');
   const deferredQuery = useDeferredValue(query);
   const [isPending, startTransition] = useTransition();
+  const searchParams = useSearchParams();
+  const path = usePathname();
+  const router = useRouter();
 
   useEffect(() => {
     let canceled = false;
@@ -72,7 +84,20 @@ export default function AssigneeSearch({
   }
 
   function handleSave() {
-    updateList(ticketId);
+    if (asFilter) {
+      const params = new URLSearchParams(searchParams);
+      if (assigneesList.length > 0) {
+        params.set(
+          'filterbyuser',
+          assigneesList.map(user => user.profile_id).join(','),
+        );
+      } else {
+        params.delete('filterbyuser');
+      }
+      router.push(`${path}?${params}`);
+    } else {
+      updateList(ticketId);
+    }
   }
 
   const userList = users.map(user => {

@@ -15,10 +15,13 @@ export default function TicketAssigneeList({
     item => item.profile.username ?? 'Unnamed user',
   );
 
+  const assigneeNamesToShow = `${assigneeNames.at(0)} ${assigneeNames.length > 1 ? `+${assigneeNames.length - 1} more` : ''}`;
+
   return (
     <div
       className={`${compact ? '' : 'mt-4'} flex min-w-0 items-center`}
       aria-label={`Assigned to ${assigneeNames.join(', ')}`}
+      title={assigneeNames.join(', ')}
     >
       {assignees.slice(0, 4).map((item, assigneeIndex) => (
         <span
@@ -36,7 +39,11 @@ export default function TicketAssigneeList({
           +{assignees.length - 4}
         </span>
       )}
-      {!compact && <span className='ml-2.5 truncate text-xs text-zinc-500'>{assigneeNames.join(', ')}</span>}
+      {!compact && (
+        <span className='ml-2.5 truncate text-xs text-zinc-500'>
+          {assigneeNamesToShow}
+        </span>
+      )}
     </div>
   );
 }

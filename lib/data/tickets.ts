@@ -32,9 +32,25 @@ export async function createTicketAPI({
   return { ticketId, error };
 }
 
-export async function getTicketsAPI() {
+export async function getTicketsAPI(assigneeIds?: Profile['id'][]) {
   const supabase = await createClient();
-  const { data, error } = await supabase
+  let ticketIds: Ticket['id'][] | undefined;
+
+  if (assigneeIds !== undefined) {
+    if (assigneeIds.length === 0) return { data: [], error: null };
+
+    const { data: assignments, error: assignmentsError } = await supabase
+      .from('ticket_assignees')
+      .select('ticket_id')
+      .in('profile_id', assigneeIds);
+
+    if (assignmentsError) return { data: null, error: assignmentsError };
+
+    ticketIds = [...new Set(assignments.map(({ ticket_id }) => ticket_id))];
+    if (ticketIds.length === 0) return { data: [], error: null };
+  }
+
+  let query = supabase
     .from('tickets')
     .select(
       `
@@ -47,8 +63,11 @@ export async function getTicketsAPI() {
         )
       )
     `,
-    )
-    .order('created_at', { ascending: false });
+    );
+
+  if (ticketIds) query = query.in('id', ticketIds);
+
+  const { data, error } = await query.order('created_at', { ascending: false });
 
   return { data, error };
 }

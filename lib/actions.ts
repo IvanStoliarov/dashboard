@@ -14,9 +14,10 @@ import {
 import {
   getAllUsersAPI,
   getUserDataAPI,
+  getUsersByIdsAPI,
   getUsersByNameAPI,
 } from './data/profiles';
-import type { Ticket, TicketData } from './types';
+import type { Profile, Ticket, TicketData } from './types';
 import { refresh } from 'next/cache';
 import { cache } from 'react';
 import { redirect } from 'next/navigation';
@@ -35,10 +36,7 @@ const newTicketSchema = z.object({
   title: z.string('Not a string').min(5, 'Minimum 5 symbols'),
   description: z.string('Not a string').min(5, 'Minimum 5 symbols'),
   assignedTo: z.optional(z.string()),
-  dueToDate: z.union([
-    z.literal(''),
-    z.iso.date('Invalid due date'),
-  ]),
+  dueToDate: z.union([z.literal(''), z.iso.date('Invalid due date')]),
 });
 
 export async function createTicket(
@@ -54,7 +52,7 @@ export async function createTicket(
     title: String(formData.get('title')) || '',
     description: String(formData.get('description')) || '',
     assignedTo: assignedTo.join(','),
-    dueToDate: String(formData.get('due_to_date')) || ''
+    dueToDate: String(formData.get('due_to_date')) || '',
   };
 
   const result = newTicketSchema.safeParse(values);
@@ -102,9 +100,24 @@ function getTicketSortDirection(sortdir?: string): TicketSortDirection {
   return sortdir === 'desc' ? sortdir : DEFAULT_TICKET_SORT_DIRECTION;
 }
 
+function getAssigneeFilterIds(filterbyuser?: string): Profile['id'][] | undefined {
+  if (filterbyuser === undefined) return undefined;
+
+  const assigneeIds = filterbyuser.split(',');
+  if (assigneeIds.some(id => !z.uuid().safeParse(id).success)) return [];
+
+  return [...new Set(assigneeIds)];
+}
+
 export const getTickets = cache(
-  async ({ sortby, sortdir }: { sortby?: string; sortdir?: string } = {}) => {
-    const { data, error } = await getTicketsAPI();
+  async ({
+    sortby,
+    sortdir,
+    filterbyuser,
+  }: { sortby?: string; sortdir?: string; filterbyuser?: string } = {}) => {
+    const { data, error } = await getTicketsAPI(
+      getAssigneeFilterIds(filterbyuser),
+    );
     if (error || !data) return [];
 
     const resolvedSortBy = getTicketSortBy(sortby);
@@ -143,6 +156,9 @@ export async function fetchProfileDataById(id: string) {
 
 export async function fetchAllUsers() {
   return getAllUsersAPI();
+}
+export async function fetchUsersByIds(ids: string[]) {
+  return getUsersByIdsAPI(ids);
 }
 
 export async function fetchUsersByName(name: string) {

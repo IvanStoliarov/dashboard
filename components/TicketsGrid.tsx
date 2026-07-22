@@ -7,13 +7,15 @@ import { TicketIcon } from '@heroicons/react/24/outline';
 export default async function TicketsGrid({
   sortby,
   sortdir,
+  filterbyuser,
 }: {
   sortby: string;
   sortdir: string;
+  filterbyuser: string | undefined;
 }) {
   const [statuses, tickets] = await Promise.all([
     getTicketStatuses(),
-    getTickets({ sortby, sortdir }),
+    getTickets({ sortby, sortdir, filterbyuser }),
   ]);
 
   return (

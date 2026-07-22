@@ -13,7 +13,11 @@ export default async function DashboardPage({
   const supabase = await createClient();
   const { data } = await supabase.auth.getClaims();
   const claims = data?.claims;
-  const { sortby = 'due-to', sortdir = 'asc' } = await searchParams;
+  const {
+    sortby = 'due-to',
+    sortdir = 'asc',
+    filterbyuser,
+  } = await searchParams;
 
   if (!claims) {
     redirect('/login');
@@ -31,7 +35,6 @@ export default async function DashboardPage({
           </p>
         </div>
         <div className='flex flex-col gap-2 lg:flex-row'>
-          <SortBy />
           <LinkAsButton
             href='/new-ticket'
             className='gap-2 self-start -order-1 lg:order-1'
@@ -44,6 +47,9 @@ export default async function DashboardPage({
       <TicketList
         sortby={Array.isArray(sortby) ? sortby.at(0) : sortby}
         sortdir={Array.isArray(sortdir) ? sortdir.at(0) : sortdir}
+        filterbyuser={
+          Array.isArray(filterbyuser) ? filterbyuser.at(0) : filterbyuser
+        }
       />
     </div>
   );

@@ -39,10 +39,10 @@ export default function SortBy() {
   }
 
   return (
-    <div className='flex items-center gap-2'>
+    <div className='flex flex-col items-start gap-2 sm:flex-row sm:items-center'>
       <label
         htmlFor='sortby'
-        className='hidden text-xs font-medium uppercase tracking-[0.08em] text-zinc-400 sm:block'
+        className='text-xs font-medium uppercase tracking-[0.08em] text-zinc-400 block'
       >
         Sort by
       </label>
