@@ -28,12 +28,17 @@ export interface NewTicketFormState {
   title: string;
   description: string;
   assignedTo: string;
+  dueToDate: string;
 }
 
 const newTicketSchema = z.object({
   title: z.string('Not a string').min(5, 'Minimum 5 symbols'),
   description: z.string('Not a string').min(5, 'Minimum 5 symbols'),
   assignedTo: z.optional(z.string()),
+  dueToDate: z.union([
+    z.literal(''),
+    z.iso.date('Invalid due date'),
+  ]),
 });
 
 export async function createTicket(
@@ -49,6 +54,7 @@ export async function createTicket(
     title: String(formData.get('title')) || '',
     description: String(formData.get('description')) || '',
     assignedTo: assignedTo.join(','),
+    dueToDate: String(formData.get('due_to_date')) || ''
   };
 
   const result = newTicketSchema.safeParse(values);
@@ -62,12 +68,13 @@ export async function createTicket(
       errors,
     };
   }
-  const { title, description } = values;
+  const { title, description, dueToDate } = values;
 
   const { ticketId, error: ticketError } = await createTicketAPI({
     title,
     description,
     assignedTo,
+    dueTo: dueToDate || null,
   });
   if (ticketError || !ticketId)
     return {

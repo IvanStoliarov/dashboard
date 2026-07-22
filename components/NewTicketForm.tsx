@@ -7,11 +7,13 @@ import {
 } from '@/lib/actions';
 import { useActionState } from 'react';
 import AssigneesSelect from './AssigneesSelect';
+import CalendarPicker from './CalendarPicker';
 
 const initialState: NewTicketFormState = {
   title: '',
   description: '',
   assignedTo: '',
+  dueToDate: '',
   success: false,
   message: '',
   errors: null,
@@ -91,6 +93,23 @@ export default function NewTicketForm() {
         ticketId=''
         asFormElement={true}
       />
+      <div>
+        <CalendarPicker
+          initialValue={
+            state.errors?.dueToDate ? null : state.dueToDate || null
+          }
+          ticketId=''
+        />
+        {state.errors?.dueToDate && (
+          <div className='mt-2 space-y-1' role='alert'>
+            {state.errors.dueToDate.map((message, index) => (
+              <p className='text-sm text-red-600' key={`${message}-${index}`}>
+                {message}
+              </p>
+            ))}
+          </div>
+        )}
+      </div>
 
       <div className='flex justify-end border-t border-zinc-100 pt-6'>
         <Button disabled={isPending} type='submit'>

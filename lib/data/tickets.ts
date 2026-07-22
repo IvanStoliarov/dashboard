@@ -6,10 +6,12 @@ export async function createTicketAPI({
   title,
   description,
   assignedTo,
+  dueTo,
 }: {
   title: Ticket['title'];
   description: Ticket['description'];
   assignedTo: Profile['id'][];
+  dueTo: Ticket['due_to'];
 }) {
   const supabase = await createClient();
 
@@ -19,8 +21,13 @@ export async function createTicketAPI({
       p_title: title,
       p_description: description,
       p_assigned_to: assignedTo,
+      p_due_to: dueTo,
     },
   );
+
+  if (error) {
+    console.log(error)
+  }
 
   return { ticketId, error };
 }

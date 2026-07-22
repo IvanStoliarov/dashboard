@@ -86,7 +86,13 @@ function Trigger({
   );
 }
 
-function Content({ children }: { children: React.ReactNode }) {
+function Content({
+  children,
+}: {
+  children:
+    | React.ReactNode
+    | ((args: { closeModal: () => void }) => React.ReactNode);
+}) {
   const { isOpen, closeModal } = useModal();
   const ref = useOutsideClick<HTMLDivElement>(closeModal, true);
 
@@ -108,7 +114,7 @@ function Content({ children }: { children: React.ReactNode }) {
         >
           <XMarkIcon aria-hidden='true' className='size-5' />
         </button>
-        {children}
+        {typeof children === 'function' ? children({ closeModal }) : children}
       </div>
     </div>,
     document.body,
