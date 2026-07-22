@@ -6,8 +6,8 @@ import {
 import { formatCreatedAtTitle } from '@/lib/format';
 import { notFound } from 'next/navigation';
 import TicketContentForm from './TicketContentForm';
-import StatusSelect from './StatusSelect';
-import StatusButtons from './StatusButtons';
+import StatusSelect from './status/StatusSelect';
+import StatusButtons from './status/StatusButtons';
 import AssigneesSelect from './assigneesSelect/AssigneesSelect';
 import CalendarPicker from './CalendarPicker';
 

@@ -6,8 +6,10 @@ import {
   NewTicketFormState,
 } from '@/lib/actions';
 import { useActionState } from 'react';
-import AssigneesSelect from './assigneesSelect/AssigneesSelect';
-import CalendarPicker from './CalendarPicker';
+import AssigneesSelect from '../assigneesSelect/AssigneesSelect';
+import CalendarPicker from '../CalendarPicker';
+import Error from './Error';
+import Message from './Message';
 
 const initialState: NewTicketFormState = {
   title: '',
@@ -45,15 +47,7 @@ export default function NewTicketForm() {
           aria-describedby={state.errors?.title ? 'title-error' : undefined}
           className='h-11 w-full rounded-lg border border-zinc-300 bg-white px-3 text-sm text-zinc-950 outline-none transition placeholder:text-zinc-400 focus:border-zinc-950 focus:ring-2 focus:ring-zinc-950/10 disabled:cursor-not-allowed disabled:bg-zinc-50 disabled:opacity-70'
         />
-        {state.errors?.title && (
-          <div id='title-error' className='mt-2 space-y-1' role='alert'>
-            {state.errors.title.map((message, index) => (
-              <p className='text-sm text-red-600' key={`${message}-${index}`}>
-                {message}
-              </p>
-            ))}
-          </div>
-        )}
+        {state.errors?.title && <Error errors={state.errors.title} />}
       </div>
 
       <div>
@@ -77,13 +71,7 @@ export default function NewTicketForm() {
           className='w-full resize-y rounded-lg border border-zinc-300 bg-white px-3 py-2.5 text-sm leading-6 text-zinc-950 outline-none transition placeholder:text-zinc-400 focus:border-zinc-950 focus:ring-2 focus:ring-zinc-950/10 disabled:cursor-not-allowed disabled:bg-zinc-50 disabled:opacity-70'
         />
         {state.errors?.description && (
-          <div id='description-error' className='mt-2 space-y-1' role='alert'>
-            {state.errors.description.map((message, index) => (
-              <p className='text-sm text-red-600' key={`${message}-${index}`}>
-                {message}
-              </p>
-            ))}
-          </div>
+          <Error errors={state.errors.description} />
         )}
       </div>
 
@@ -93,6 +81,7 @@ export default function NewTicketForm() {
         ticketId=''
         asFormElement={true}
       />
+
       <div>
         <CalendarPicker
           initialValue={
@@ -101,15 +90,7 @@ export default function NewTicketForm() {
           ticketId=''
           describedBy={state.errors?.dueToDate ? 'due-date-error' : undefined}
         />
-        {state.errors?.dueToDate && (
-          <div id='due-date-error' className='mt-2 space-y-1' role='alert'>
-            {state.errors.dueToDate.map((message, index) => (
-              <p className='text-sm text-red-600' key={`${message}-${index}`}>
-                {message}
-              </p>
-            ))}
-          </div>
-        )}
+        {state.errors?.dueToDate && <Error errors={state.errors.dueToDate} />}
       </div>
 
       <div className='flex justify-end border-t border-zinc-100 pt-6'>
@@ -119,16 +100,7 @@ export default function NewTicketForm() {
       </div>
 
       {state.message && (
-        <p
-          role={state.success ? 'status' : 'alert'}
-          className={`rounded-lg border px-3 py-2.5 text-sm ${
-            state.success
-              ? 'border-emerald-200 bg-emerald-50 text-emerald-700'
-              : 'border-red-200 bg-red-50 text-red-700'
-          }`}
-        >
-          {state.message}
-        </p>
+        <Message isSuccess={state.success} message={state.message} />
       )}
     </form>
   );

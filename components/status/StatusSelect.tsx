@@ -1,8 +1,8 @@
 'use client';
 import { ChevronDownIcon } from '@heroicons/react/20/solid';
-import { Ticket } from '@/lib/types';
-import TicketStatusBadge from './ticket/TicketStatusBadge';
-import { useEffect, useId, useRef } from 'react';
+import { type Ticket } from '@/lib/types';
+import TicketStatusBadge from '../ticket/TicketStatusBadge';
+import { KeyboardEvent, useEffect, useId, useRef } from 'react';
 import {
   StatusSelectProvider,
   useStatusSelect,
@@ -53,13 +53,43 @@ function StatusSelectContent({
   useEffect(() => {
     if (!isOpen) return;
     window.requestAnimationFrame(() =>
-      menuRef.current?.querySelector<HTMLButtonElement>('button:not(:disabled)')?.focus(),
+      menuRef.current
+        ?.querySelector<HTMLButtonElement>('button:not(:disabled)')
+        ?.focus(),
     );
   }, [isOpen]);
 
   function closeAndRestoreFocus() {
     close();
     window.requestAnimationFrame(() => triggerRef.current?.focus());
+  }
+
+  function handleKeyDown(event: KeyboardEvent<HTMLDivElement>) {
+    const items = Array.from(
+      menuRef.current?.querySelectorAll<HTMLButtonElement>(
+        'button:not(:disabled)',
+      ) ?? [],
+    );
+    const currentIndex = items.indexOf(
+      document.activeElement as HTMLButtonElement,
+    );
+    if (event.key === 'Escape') {
+      event.preventDefault();
+      closeAndRestoreFocus();
+    } else if (event.key === 'ArrowDown' || event.key === 'ArrowUp') {
+      event.preventDefault();
+      const nextIndex =
+        event.key === 'ArrowDown'
+          ? (currentIndex + 1) % items.length
+          : (currentIndex - 1 + items.length) % items.length;
+      items[nextIndex]?.focus();
+    } else if (event.key === 'Home') {
+      event.preventDefault();
+      items.at(0)?.focus();
+    } else if (event.key === 'End') {
+      event.preventDefault();
+      items.at(-1)?.focus();
+    }
   }
 
   return (
@@ -86,28 +116,7 @@ function StatusSelectContent({
           id={menuId}
           role='menu'
           aria-label='Change ticket status'
-          onKeyDown={event => {
-            const items = Array.from(
-              menuRef.current?.querySelectorAll<HTMLButtonElement>('button:not(:disabled)') ?? [],
-            );
-            const currentIndex = items.indexOf(document.activeElement as HTMLButtonElement);
-            if (event.key === 'Escape') {
-              event.preventDefault();
-              closeAndRestoreFocus();
-            } else if (event.key === 'ArrowDown' || event.key === 'ArrowUp') {
-              event.preventDefault();
-              const nextIndex = event.key === 'ArrowDown'
-                ? (currentIndex + 1) % items.length
-                : (currentIndex - 1 + items.length) % items.length;
-              items[nextIndex]?.focus();
-            } else if (event.key === 'Home') {
-              event.preventDefault();
-              items.at(0)?.focus();
-            } else if (event.key === 'End') {
-              event.preventDefault();
-              items.at(-1)?.focus();
-            }
-          }}
+          onKeyDown={handleKeyDown}
           className={`absolute top-[calc(100%+0.5rem)] z-10 min-w-40 rounded-xl border border-zinc-200 bg-white p-1.5 shadow-[0_16px_32px_-16px_rgba(24,24,27,0.35)] [&_ul]:space-y-0.5 ${position === 'left' ? 'left-0' : 'right-0'}`}
         >
           {children}

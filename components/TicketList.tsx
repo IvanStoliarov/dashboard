@@ -3,7 +3,7 @@ import { Suspense } from 'react';
 import TicketsCountLabel from './TicketsCountLabel';
 import TicketsCountLabelSkeleton from './TicketsCountLabelSkeleton';
 import TicketsGridSkeleton from './TicketsGridSkeleton';
-import SortBy from './SortBy';
+import SortBy from './sort/SortBy';
 import AssigneesSelect from './assigneesSelect/AssigneesSelect';
 import AssigneeSelectSkeleton from './assigneesSelect/AssigneeSelectSkeleton';
 import { fetchUsersByName } from '@/lib/actions';

@@ -1,8 +1,8 @@
 import { CalendarDaysIcon } from '@heroicons/react/24/outline';
 import { formatCreatedAt, formatCreatedAtTitle } from '@/lib/format';
 import type { Ticket } from '@/lib/types';
-import StatusSelect from '../StatusSelect';
-import StatusButtons from '../StatusButtons';
+import StatusSelect from '../status/StatusSelect';
+import StatusButtons from '../status/StatusButtons';
 import CalendarPicker from '../CalendarPicker';
 
 interface TicketMetadataProps {

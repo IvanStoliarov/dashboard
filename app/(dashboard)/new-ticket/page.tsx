@@ -1,6 +1,6 @@
 import React, { Suspense } from 'react';
-import NewTicketForm from '@/components/NewTicketForm';
-import NewTicketFormSkeleton from '@/components/NewTicketFormSkeleton';
+import NewTicketForm from '@/components/newTicket/NewTicketForm';
+import NewTicketFormSkeleton from '@/components/newTicket/NewTicketFormSkeleton';
 
 export default async function NewTicket() {
   return (
