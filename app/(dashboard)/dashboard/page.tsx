@@ -30,9 +30,12 @@ export default async function DashboardPage({
             Keep work moving and ownership clear.
           </p>
         </div>
-        <div className='flex gap-2'>
+        <div className='flex flex-col gap-2 lg:flex-row'>
           <SortBy />
-          <LinkAsButton href='/new-ticket' className='gap-2 self-start'>
+          <LinkAsButton
+            href='/new-ticket'
+            className='gap-2 self-start -order-1 lg:order-1'
+          >
             <PlusIcon aria-hidden='true' className='size-4' />
             New ticket
           </LinkAsButton>

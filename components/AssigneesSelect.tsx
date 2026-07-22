@@ -69,7 +69,7 @@ function AssigneesSelectContent({ handleSearch }: AssigneesSelectContentProps) {
         <div
           role='dialog'
           aria-label='Manage ticket assignees'
-          className='absolute top-[calc(100%+0.5rem)] left-0 z-20 w-[min(22rem,calc(100vw-2.5rem))] overflow-hidden rounded-xl border border-zinc-200 bg-white shadow-[0_16px_32px_-16px_rgba(24,24,27,0.35)]'
+          className='absolute top-[calc(100%+0.5rem)] left-0 z-20 w-[min(16rem,calc(100vw-2.5rem))] overflow-hidden rounded-xl border border-zinc-200 bg-white shadow-[0_16px_32px_-16px_rgba(24,24,27,0.35)]'
         >
           <div className='border-b border-zinc-100 px-4 py-3'>
             <p className='text-sm font-semibold text-zinc-900'>Assign people</p>

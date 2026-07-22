@@ -1,5 +1,4 @@
 import { getTickets } from '@/lib/actions';
-import React from 'react';
 
 export default async function TicketsCountLabel() {
   const tickets = await getTickets();
