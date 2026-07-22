@@ -126,11 +126,11 @@ export async function getTicketById(id: Ticket['id']) {
   return data;
 }
 
-export async function getTicketStatuses() {
+export const getTicketStatuses = cache(async () => {
   const { data, error } = await getTicketStatusesAPI();
   if (error || !data) return [];
   return data;
-}
+})
 
 export async function fetchProfileDataById(id: string) {
   return getUserDataAPI(id);
