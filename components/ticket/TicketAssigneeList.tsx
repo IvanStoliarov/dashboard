@@ -9,7 +9,13 @@ export default function TicketAssigneeList({
   assignees,
   compact = false,
 }: TicketAssigneeListProps) {
-  if (assignees.length === 0) return null;
+  if (assignees.length === 0) {
+    return compact ? (
+      <span className='flex size-6 items-center justify-center rounded-full border border-dashed border-zinc-300 text-zinc-400'>
+        +
+      </span>
+    ) : null;
+  }
 
   const assigneeNames = assignees.map(
     item => item.profile.username ?? 'Unnamed user',
@@ -32,7 +38,9 @@ export default function TicketAssigneeList({
             assigneeIndex > 0 ? '-ml-1.5' : ''
           }`}
         >
-          <span aria-hidden='true'>{(item.profile.username ?? '?').slice(0, 2)}</span>
+          <span aria-hidden='true'>
+            {(item.profile.username ?? '?').slice(0, 2)}
+          </span>
         </span>
       ))}
       {assignees.length > 4 && (

@@ -6,7 +6,7 @@ import {
   NewTicketFormState,
 } from '@/lib/actions';
 import { useActionState } from 'react';
-import AssigneesSelect from './AssigneesSelect';
+import AssigneesSelect from './assigneesSelect/AssigneesSelect';
 import CalendarPicker from './CalendarPicker';
 
 const initialState: NewTicketFormState = {

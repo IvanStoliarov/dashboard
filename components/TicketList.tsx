@@ -4,8 +4,10 @@ import TicketsCountLabel from './TicketsCountLabel';
 import TicketsCountLabelSkeleton from './TicketsCountLabelSkeleton';
 import TicketsGridSkeleton from './TicketsGridSkeleton';
 import SortBy from './SortBy';
-import AssigneesSelect from './AssigneesSelect';
-import { fetchUsersByIds, fetchUsersByName } from '@/lib/actions';
+import AssigneesSelect from './assigneesSelect/AssigneesSelect';
+import AssigneeSelectSkeleton from './assigneesSelect/AssigneeSelectSkeleton';
+import { fetchUsersByName } from '@/lib/actions';
+import AssigneeSelectWrapper from './assigneesSelect/AssigneeSelectWrapper';
 
 export default async function TicketList({
   sortby = 'due-to',
@@ -16,24 +18,24 @@ export default async function TicketList({
   sortdir: string | undefined;
   filterbyuser: string | undefined;
 }) {
-  const assigneeIds = filterbyuser?.split(',');
-  const assigneesData = assigneeIds ? await fetchUsersByIds(assigneeIds) : [];
-  const assigneeList = assigneesData.map(user => ({
-    profile_id: user.id,
-    profile: { id: user.id, username: user.username },
-  }));
   return (
     <section aria-labelledby='tickets-heading'>
       <div className='flex flex-col gap-4 py-3 md:flex-row md:items-center md:justify-between'>
         <div>
-          <AssigneesSelect
-            key={filterbyuser}
-            assigneesList={assigneeList}
-            handleSearch={fetchUsersByName}
-            ticketId=''
-            label='Filter by Assignee'
-            asFilter={true}
-          />
+          <Suspense fallback={<AssigneeSelectSkeleton />}>
+            <AssigneeSelectWrapper filterbyuser={filterbyuser}>
+              {({ assigneeList }) => (
+                <AssigneesSelect
+                  key={filterbyuser}
+                  assigneesList={assigneeList}
+                  handleSearch={fetchUsersByName}
+                  ticketId=''
+                  label='Filter by Assignee'
+                  asFilter={true}
+                />
+              )}
+            </AssigneeSelectWrapper>
+          </Suspense>
         </div>
         <SortBy />
       </div>
@@ -49,12 +51,15 @@ export default async function TicketList({
             Tickets
           </h2>
         </div>
-        <Suspense fallback={<TicketsCountLabelSkeleton />}>
+        <Suspense key={filterbyuser} fallback={<TicketsCountLabelSkeleton />}>
           <TicketsCountLabel filterbyuser={filterbyuser} />
         </Suspense>
       </div>
 
-      <Suspense key={sortby + sortdir} fallback={<TicketsGridSkeleton />}>
+      <Suspense
+        key={sortby + sortdir + filterbyuser}
+        fallback={<TicketsGridSkeleton />}
+      >
         <TicketsGrid
           sortby={sortby}
           sortdir={sortdir}

@@ -8,7 +8,7 @@ import { notFound } from 'next/navigation';
 import TicketContentForm from './TicketContentForm';
 import StatusSelect from './StatusSelect';
 import StatusButtons from './StatusButtons';
-import AssigneesSelect from './AssigneesSelect';
+import AssigneesSelect from './assigneesSelect/AssigneesSelect';
 import CalendarPicker from './CalendarPicker';
 
 interface TicketDetailsProps {
