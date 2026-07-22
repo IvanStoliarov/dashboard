@@ -1,10 +1,8 @@
 import React, { Suspense } from 'react';
 import NewTicketForm from '@/components/NewTicketForm';
-import { fetchAllUsers } from '@/lib/actions';
 import NewTicketFormSkeleton from '@/components/NewTicketFormSkeleton';
 
 export default async function NewTicket() {
-  const usersPromise = fetchAllUsers();
   return (
     <div className='mx-auto max-w-2xl'>
       <header className='border-b border-zinc-100 pb-6'>
@@ -18,7 +16,7 @@ export default async function NewTicket() {
         </p>
       </header>
       <Suspense fallback={<NewTicketFormSkeleton />}>
-        <NewTicketForm usersPromise={usersPromise} />
+        <NewTicketForm />
       </Suspense>
     </div>
   );

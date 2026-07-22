@@ -9,6 +9,7 @@ import { TicketAssignee } from '@/lib/types';
 
 interface AssigneeSearchProps {
   handleSearch: HandleSearchAssignee;
+  asFormElement: boolean;
 }
 
 type User = {
@@ -28,7 +29,10 @@ const getData = async (searchQuery: string, promise: HandleSearchAssignee) => {
   return cache.get(searchQuery);
 };
 
-export default function AssigneeSearch({ handleSearch }: AssigneeSearchProps) {
+export default function AssigneeSearch({
+  handleSearch,
+  asFormElement,
+}: AssigneeSearchProps) {
   const {
     assigneesList,
     assigneeListChanged,
@@ -135,7 +139,7 @@ export default function AssigneeSearch({ handleSearch }: AssigneeSearchProps) {
           </li>
         )}
       </ul>
-      {assigneeListChanged && (
+      {assigneeListChanged && !asFormElement && (
         <div className='flex gap-2'>
           <Button
             variant='secondary'

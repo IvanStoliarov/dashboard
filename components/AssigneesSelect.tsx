@@ -19,29 +19,46 @@ interface AssigneesSelectProps {
   assigneesList: TicketData['ticket_assignees'];
   handleSearch: HandleSearchAssignee;
   ticketId: TicketData['id'];
+  asFormElement?: boolean;
 }
 
 export default function AssigneesSelect({
   assigneesList,
   handleSearch,
   ticketId,
+  asFormElement = false,
 }: AssigneesSelectProps) {
   return (
     <AssigneesContext initialAssigneesList={assigneesList} ticketId={ticketId}>
-      <AssigneesSelectContent handleSearch={handleSearch} />
+      <AssigneesSelectContent
+        asFormElement={asFormElement}
+        handleSearch={handleSearch}
+      />
     </AssigneesContext>
   );
 }
 
 interface AssigneesSelectContentProps {
   handleSearch: HandleSearchAssignee;
+  asFormElement: boolean;
 }
 
-function AssigneesSelectContent({ handleSearch }: AssigneesSelectContentProps) {
+function AssigneesSelectContent({
+  handleSearch,
+  asFormElement,
+}: AssigneesSelectContentProps) {
   const { isOpen, toggleOpen, assigneesList, addOrRemoveAssignee } =
     useAssignees();
   return (
     <div className='relative mt-3 inline-flex'>
+      {assigneesList.map(user => (
+        <input
+          key={user.profile_id}
+          type='hidden'
+          name='assigned_to'
+          value={user.profile_id}
+        />
+      ))}
       <button
         type='button'
         onClick={toggleOpen}
@@ -105,7 +122,10 @@ function AssigneesSelectContent({ handleSearch }: AssigneesSelectContentProps) {
             ))}
           </ul>
           <div className='border-t border-zinc-100 p-3'>
-            <AssigneeSearch handleSearch={handleSearch} />
+            <AssigneeSearch
+              asFormElement={asFormElement}
+              handleSearch={handleSearch}
+            />
           </div>
         </div>
       )}

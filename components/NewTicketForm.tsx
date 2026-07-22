@@ -1,18 +1,12 @@
 'use client';
 import Button from '@/components/Button';
-import { createTicket, NewTicketFormState } from '@/lib/actions';
-import { use, useActionState } from 'react';
-
-interface NewTicketFormProps {
-  usersPromise: Promise<
-    | {
-        email: string | null;
-        id: string;
-        username: string | null;
-      }[]
-    | []
-  >;
-}
+import {
+  createTicket,
+  fetchUsersByName,
+  NewTicketFormState,
+} from '@/lib/actions';
+import { useActionState } from 'react';
+import AssigneesSelect from './AssigneesSelect';
 
 const initialState: NewTicketFormState = {
   title: '',
@@ -23,12 +17,11 @@ const initialState: NewTicketFormState = {
   errors: null,
 };
 
-export default function NewTicketForm({ usersPromise }: NewTicketFormProps) {
+export default function NewTicketForm() {
   const [state, formAction, isPending] = useActionState(
     createTicket,
     initialState,
   );
-  const users = use(usersPromise);
 
   return (
     <form action={formAction} className='mt-8 space-y-6'>
@@ -92,42 +85,12 @@ export default function NewTicketForm({ usersPromise }: NewTicketFormProps) {
         )}
       </div>
 
-      <div>
-        <label
-          htmlFor='assigned_to'
-          className='mb-2 block text-sm font-medium text-zinc-800'
-        >
-          Assignee
-        </label>
-        <select
-          disabled={isPending}
-          key={state.assignedTo}
-          name='assigned_to'
-          id='assigned_to'
-          defaultValue={state.assignedTo}
-          aria-invalid={Boolean(state.errors?.assignedTo)}
-          aria-describedby={
-            state.errors?.assignedTo ? 'assigned-to-error' : undefined
-          }
-          className='h-11 w-full rounded-lg border border-zinc-300 bg-white px-3 text-sm text-zinc-950 outline-none transition focus:border-zinc-950 focus:ring-2 focus:ring-zinc-950/10 disabled:cursor-not-allowed disabled:bg-zinc-50 disabled:opacity-70'
-        >
-          <option value=''>Select a team member</option>
-          {users.map(user => (
-            <option key={user.id} value={user.id}>
-              {user.username}
-            </option>
-          ))}
-        </select>
-        {state.errors?.assignedTo && (
-          <div id='assigned-to-error' className='mt-2 space-y-1'>
-            {state.errors.assignedTo.map((message, index) => (
-              <p className='text-sm text-red-600' key={`${message}-${index}`}>
-                {message}
-              </p>
-            ))}
-          </div>
-        )}
-      </div>
+      <AssigneesSelect
+        assigneesList={[]}
+        handleSearch={fetchUsersByName}
+        ticketId=''
+        asFormElement={true}
+      />
 
       <div className='flex justify-end border-t border-zinc-100 pt-6'>
         <Button disabled={isPending} type='submit'>

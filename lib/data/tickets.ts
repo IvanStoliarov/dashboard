@@ -9,17 +9,20 @@ export async function createTicketAPI({
 }: {
   title: Ticket['title'];
   description: Ticket['description'];
-  assignedTo: Profile['id'] | null;
+  assignedTo: Profile['id'][];
 }) {
   const supabase = await createClient();
 
-  const { data, error } = await supabase.rpc('create_ticket_with_assignee', {
-    p_title: title,
-    p_description: description,
-    ...(assignedTo ? { p_assigned_to: assignedTo } : {}),
-  });
+  const { data: ticketId, error } = await supabase.rpc(
+    'create_ticket_with_assignee',
+    {
+      p_title: title,
+      p_description: description,
+      p_assigned_to: assignedTo,
+    },
+  );
 
-  return { data, error };
+  return { ticketId, error };
 }
 
 export async function getTicketsAPI() {

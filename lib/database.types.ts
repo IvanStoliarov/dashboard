@@ -114,7 +114,7 @@ export type Database = {
     }
     Functions: {
       create_ticket_with_assignee: {
-        Args: { p_assigned_to?: string; p_description: string; p_title: string }
+        Args: { p_assigned_to?: string[]; p_description: string; p_title: string }
         Returns: string
       }
       get_ticket_statuses: {

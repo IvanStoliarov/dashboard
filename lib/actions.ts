@@ -19,6 +19,7 @@ import {
 import type { Ticket, TicketData } from './types';
 import { refresh } from 'next/cache';
 import { cache } from 'react';
+import { redirect } from 'next/navigation';
 
 export interface NewTicketFormState {
   success: boolean;
@@ -39,10 +40,15 @@ export async function createTicket(
   prevState: NewTicketFormState,
   formData: FormData,
 ) {
+  const assignedTo = formData
+    .getAll('assigned_to')
+    .filter(
+      (value): value is string => typeof value === 'string' && value !== '',
+    );
   const values = {
     title: String(formData.get('title')) || '',
     description: String(formData.get('description')) || '',
-    assignedTo: String(formData.get('assigned_to')) || '',
+    assignedTo: assignedTo.join(','),
   };
 
   const result = newTicketSchema.safeParse(values);
@@ -56,16 +62,14 @@ export async function createTicket(
       errors,
     };
   }
-  const title = String(formData.get('title'));
-  const description = String(formData.get('description'));
-  const assignedTo = String(formData.get('assigned_to'));
+  const { title, description } = values;
 
-  const { data: ticket, error: ticketError } = await createTicketAPI({
+  const { ticketId, error: ticketError } = await createTicketAPI({
     title,
     description,
-    assignedTo: assignedTo || null,
+    assignedTo,
   });
-  if (ticketError || !ticket)
+  if (ticketError || !ticketId)
     return {
       ...values,
       success: false,
@@ -73,14 +77,8 @@ export async function createTicket(
       errors: null,
     };
 
-  return {
-    title: '',
-    description: '',
-    assignedTo: '',
-    success: true,
-    message: 'Ticket successfully created',
-    errors: null,
-  };
+  refresh();
+  redirect(`/ticket/${ticketId}`);
 }
 
 type TicketSortBy = 'due-to' | 'date';
@@ -130,7 +128,7 @@ export const getTicketStatuses = cache(async () => {
   const { data, error } = await getTicketStatusesAPI();
   if (error || !data) return [];
   return data;
-})
+});
 
 export async function fetchProfileDataById(id: string) {
   return getUserDataAPI(id);
