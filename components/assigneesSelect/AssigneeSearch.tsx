@@ -1,6 +1,6 @@
 'use client';
 
-import { useDeferredValue, useEffect, useState, useTransition } from 'react';
+import { ChangeEvent, useRef, useState, useTransition } from 'react';
 import { MagnifyingGlassIcon } from '@heroicons/react/24/outline';
 import { HandleSearchAssignee } from './AssigneesSelect';
 import SearchResults from './SearchResults';
@@ -39,27 +39,27 @@ export default function AssigneeSearch({
 }: AssigneeSearchProps) {
   const [users, setUsers] = useState<Users>([]);
   const [query, setQuery] = useState('');
-  const deferredQuery = useDeferredValue(query);
   const [isPending, startTransition] = useTransition();
+  const latestSearchId = useRef(0);
 
-  useEffect(() => {
-    let canceled = false;
-    const updateUsers = async (
-      value: string,
-      handleSearch: HandleSearchAssignee,
-    ) => {
-      const data = value?.length > 0 ? await getData(value, handleSearch) : [];
-      if (!canceled) {
+  function handleChange(e: ChangeEvent<HTMLInputElement, HTMLInputElement>) {
+    const value = e.target.value;
+    const searchId = ++latestSearchId.current;
+    setQuery(value);
+
+    startTransition(async () => {
+      await new Promise(res => setTimeout(res, 500));
+      if (searchId !== latestSearchId.current) return;
+
+      const data = await getData(value, handleSearch);
+
+      if (searchId !== latestSearchId.current) return;
+
+      startTransition(() => {
         setUsers(data);
-      }
-    };
-    startTransition(() => {
-      updateUsers(deferredQuery, handleSearch);
+      });
     });
-    return () => {
-      canceled = true;
-    };
-  }, [deferredQuery, handleSearch]);
+  }
 
   return (
     <div className='space-y-2'>
@@ -79,7 +79,7 @@ export default function AssigneeSearch({
           id='assignee-search'
           name='query'
           value={query}
-          onChange={e => setQuery(e.target.value)}
+          onChange={handleChange}
           type='search'
           placeholder='Search by name or email'
           aria-describedby='assignee-search-status'

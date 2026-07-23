@@ -28,9 +28,10 @@ export default function SearchResults({
         {users.map(user => (
           <UserButton key={user.id} user={user} />
         ))}
-        {!isPending && query.length > 0 && users.length === 0 && (
+        {users.length === 0 && (
           <li className='px-2.5 py-3 text-center text-xs text-zinc-500'>
-            No teammates found.
+            {query.length === 0 && 'Start typing...'}
+            {query.length > 0 && 'No teammates found.'}
           </li>
         )}
       </ul>
