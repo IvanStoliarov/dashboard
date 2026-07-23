@@ -2,6 +2,7 @@
 
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import { validateUsername } from "@/lib/validation/username";
 
 type FieldErrors = {
   username?: string;
@@ -71,19 +72,17 @@ export async function signup(
   formData: FormData,
 ): Promise<AuthActionState> {
   const { credentials, errors } = validateCredentials(formData);
-  const username = String(formData.get("username") ?? "").trim();
+  const usernameResult = validateUsername(formData.get("username"));
 
-  if (username.length < 3 || username.length > 30) {
-    errors.username = "Username must be between 3 and 30 characters.";
-  } else if (!/^[A-Za-z0-9_ -]+$/.test(username)) {
-    errors.username =
-      "Use only letters, numbers, spaces, underscores, and hyphens.";
+  if (usernameResult.error) {
+    errors.username = usernameResult.error;
   }
 
   if (Object.keys(errors).length > 0) {
     return { errors };
   }
 
+  const { username } = usernameResult;
   const supabase = await createClient();
 
   try {

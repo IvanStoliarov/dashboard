@@ -1,7 +1,7 @@
 import { logout } from '@/app/auth/actions';
 import { fetchProfileDataById } from '@/lib/actions';
 import { ChevronDownIcon } from '@heroicons/react/24/outline';
-import Link from 'next/link';
+import PopoverLink from '@/components/PopoverLink';
 
 export default async function HeaderUserCard({ userId }: { userId: string }) {
   const profile = await fetchProfileDataById(userId);
@@ -35,9 +35,10 @@ export default async function HeaderUserCard({ userId }: { userId: string }) {
         className='absolute inset-auto mt-2 min-w-52 rounded-2xl border border-zinc-200 bg-white p-2 shadow-[0_16px_40px_-18px_rgba(24,24,27,0.35)] [position-area:bottom_span-left]'
       >
         <div className='flex flex-col'>
-          <Link
+          <PopoverLink
             className='rounded-xl px-3 py-2.5 transition hover:bg-zinc-50 focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-blue-600'
-            href='/'
+            href='/account'
+            popoverId='user-menu'
           >
             <span className='block text-xs font-medium uppercase tracking-wide text-zinc-400'>
               Signed in as
@@ -45,7 +46,7 @@ export default async function HeaderUserCard({ userId }: { userId: string }) {
             <span className='mt-0.5 block max-w-44 truncate text-sm font-semibold text-zinc-900'>
               {displayName}
             </span>
-          </Link>
+          </PopoverLink>
           <div className='my-1 border-t border-zinc-100' />
           <form action={logout} className='p-1'>
             <button

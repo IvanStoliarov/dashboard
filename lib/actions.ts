@@ -16,11 +16,13 @@ import {
   getUserDataAPI,
   getUsersByIdsAPI,
   getUsersByNameAPI,
+  updateUserAPI,
 } from './data/profiles';
 import type { Profile, Ticket, TicketData } from './types';
 import { refresh } from 'next/cache';
 import { cache } from 'react';
 import { redirect } from 'next/navigation';
+import { validateUsername } from './validation/username';
 
 export interface NewTicketFormState {
   success: boolean;
@@ -100,7 +102,9 @@ function getTicketSortDirection(sortdir?: string): TicketSortDirection {
   return sortdir === 'desc' ? sortdir : DEFAULT_TICKET_SORT_DIRECTION;
 }
 
-function getAssigneeFilterIds(filterbyuser?: string): Profile['id'][] | undefined {
+function getAssigneeFilterIds(
+  filterbyuser?: string,
+): Profile['id'][] | undefined {
   if (filterbyuser === undefined) return undefined;
 
   const assigneeIds = filterbyuser.split(',');
@@ -293,5 +297,43 @@ export async function updateTicketDueTo(
   return {
     success: true,
     message: 'Ticket due date successfully updated',
+  };
+}
+
+export type AccountEditFormState = {
+  success: boolean;
+  message: string;
+  errors?: { [key: string]: string[] };
+};
+
+export async function updateUser(
+  _prevState: AccountEditFormState,
+  formData: FormData,
+): Promise<AccountEditFormState> {
+  const usernameResult = validateUsername(formData.get('userName'));
+
+  if (usernameResult.error) {
+    return {
+      success: false,
+      message: '',
+      errors: { userName: [usernameResult.error] },
+    };
+  }
+
+  const userName = usernameResult.username;
+  const { data, error } = await updateUserAPI({ userName });
+
+  if (!data || error) {
+    return {
+      success: false,
+      message: "Couldn't update user",
+    };
+  }
+
+  refresh();
+
+  return {
+    success: true,
+    message: 'User profile has been updated successfully',
   };
 }

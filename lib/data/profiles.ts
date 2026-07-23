@@ -67,3 +67,28 @@ export async function getUsersByNameAPI(
 
   return data && data.length > 0 ? data : [];
 }
+
+export async function updateUserAPI({
+  userName,
+}: {
+  userName: NonNullable<Profile['username']>;
+}) {
+  const supabase = await createClient();
+  const {
+    data: { user },
+    error: userError,
+  } = await supabase.auth.getUser();
+
+  if (userError || !user) {
+    return { data: null, error: userError };
+  }
+
+  const { data, error } = await supabase
+    .from('profiles')
+    .update({ username: userName })
+    .eq('id', user.id)
+    .select()
+    .single();
+
+  return { data, error };
+}
