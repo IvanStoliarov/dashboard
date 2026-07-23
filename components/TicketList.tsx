@@ -20,6 +20,22 @@ export default async function TicketList({
 }) {
   return (
     <section aria-labelledby='tickets-heading'>
+      <div className='mb-5 flex items-end justify-between gap-4'>
+        <div>
+          <p className='mb-1 text-xs font-semibold uppercase tracking-[0.16em] text-zinc-400'>
+            Workspace
+          </p>
+          <h2
+            id='tickets-heading'
+            className='text-2xl font-semibold tracking-tight text-zinc-950'
+          >
+            Tickets
+          </h2>
+        </div>
+        <Suspense key={filterbyuser} fallback={<TicketsCountLabelSkeleton />}>
+          <TicketsCountLabel filterbyuser={filterbyuser} />
+        </Suspense>
+      </div>
       <div className='flex flex-col gap-4 py-3 md:flex-row md:items-center md:justify-between'>
         <div>
           <Suspense fallback={<AssigneeSelectSkeleton />}>
@@ -38,22 +54,6 @@ export default async function TicketList({
           </Suspense>
         </div>
         <SortBy />
-      </div>
-      <div className='mb-5 flex items-end justify-between gap-4'>
-        <div>
-          <p className='mb-1 text-xs font-semibold uppercase tracking-[0.16em] text-zinc-400'>
-            Workspace
-          </p>
-          <h2
-            id='tickets-heading'
-            className='text-2xl font-semibold tracking-tight text-zinc-950'
-          >
-            Tickets
-          </h2>
-        </div>
-        <Suspense key={filterbyuser} fallback={<TicketsCountLabelSkeleton />}>
-          <TicketsCountLabel filterbyuser={filterbyuser} />
-        </Suspense>
       </div>
 
       <Suspense
