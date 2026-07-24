@@ -6,6 +6,7 @@ import {
   getTicketByIdAPI,
   getTicketStatusesAPI,
   getTicketsAPI,
+  searchTicketsAPI,
   updateTicketAPI,
   updateTicketAssigneeListAPI,
   updateTicketDueToAPI,
@@ -118,9 +119,11 @@ export const getTickets = cache(
     sortby,
     sortdir,
     filterbyuser,
-  }: { sortby?: string; sortdir?: string; filterbyuser?: string } = {}) => {
+    searchQuery
+  }: { sortby?: string; sortdir?: string; filterbyuser?: string, searchQuery?: string } = {}) => {
     const { data, error } = await getTicketsAPI(
       getAssigneeFilterIds(filterbyuser),
+      searchQuery
     );
     if (error || !data) return [];
 
@@ -336,4 +339,21 @@ export async function updateUser(
     success: true,
     message: 'User profile has been updated successfully',
   };
+}
+
+export async function searchTickets({
+  query,
+  assigneeIds,
+}: {
+  query: string;
+  assigneeIds?: Profile['id'][];
+}) {
+  const LIMIT = 5;
+  const { data, error } = await searchTicketsAPI({
+    searchQuery: query,
+    assigneeIds: assigneeIds,
+    limit: LIMIT,
+  });
+
+  return { data, error };
 }

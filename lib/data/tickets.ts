@@ -1,4 +1,5 @@
 import 'server-only';
+import type { PostgrestError } from '@supabase/supabase-js';
 import { createClient } from '../supabase/server';
 import { Profile, Ticket, TicketData } from '../types';
 
@@ -32,7 +33,31 @@ export async function createTicketAPI({
   return { ticketId, error };
 }
 
-export async function getTicketsAPI(assigneeIds?: Profile['id'][]) {
+interface TicketQueryOptions {
+  assigneeIds?: Profile['id'][];
+  searchQuery?: string;
+  limit?: number;
+}
+
+interface TicketQueryResult {
+  data: TicketData[] | null;
+  error: PostgrestError | null;
+}
+
+function getIlikeFilterValue(value: string) {
+  const escapedPattern = value.replace(/[\\%_]/g, '\\$&');
+  const escapedFilterValue = `%${escapedPattern}%`
+    .replace(/\\/g, '\\\\')
+    .replace(/"/g, '\\"');
+
+  return `"${escapedFilterValue}"`;
+}
+
+async function queryTickets({
+  assigneeIds,
+  searchQuery,
+  limit,
+}: TicketQueryOptions = {}): Promise<TicketQueryResult> {
   const supabase = await createClient();
   let ticketIds: Ticket['id'][] | undefined;
 
@@ -67,9 +92,40 @@ export async function getTicketsAPI(assigneeIds?: Profile['id'][]) {
 
   if (ticketIds) query = query.in('id', ticketIds);
 
-  const { data, error } = await query.order('created_at', { ascending: false });
+  if (searchQuery !== undefined) {
+    const filterValue = getIlikeFilterValue(searchQuery);
+    query = query.or(
+      `title.ilike.${filterValue},description.ilike.${filterValue}`,
+    );
+  }
+
+  query = query.order('created_at', { ascending: false });
+
+  if (limit !== undefined) query = query.limit(limit);
+
+  const { data, error } = await query;
 
   return { data, error };
+}
+
+export async function getTicketsAPI(assigneeIds?: Profile['id'][], searchQuery?: string) {
+  return queryTickets({ assigneeIds, searchQuery });
+}
+
+export async function searchTicketsAPI({
+  searchQuery,
+  assigneeIds,
+  limit,
+}: {
+  searchQuery: string;
+  assigneeIds?: Profile['id'][];
+  limit?: number;
+}) {
+  const query = searchQuery.trim();
+
+  if (!query) return { data: [], error: null };
+
+  return queryTickets({ assigneeIds, searchQuery: query, limit });
 }
 
 export async function getTicketByIdAPI(id: Ticket['id']) {

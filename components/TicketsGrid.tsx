@@ -8,14 +8,16 @@ export default async function TicketsGrid({
   sortby,
   sortdir,
   filterbyuser,
+  search,
 }: {
   sortby: string;
   sortdir: string;
   filterbyuser: string | undefined;
+  search: string | undefined;
 }) {
   const [statuses, tickets] = await Promise.all([
     getTicketStatuses(),
-    getTickets({ sortby, sortdir, filterbyuser }),
+    getTickets({ sortby, sortdir, filterbyuser, searchQuery: search }),
   ]);
 
   return (
@@ -50,7 +52,10 @@ export default async function TicketsGrid({
                 >
                   {TICKET_STATUS_CONFIG[status].label}
                 </h2>
-                <span aria-label={`${tickets.filter(ticket => ticket.status === status).length} tickets`} className='rounded-full bg-white px-2 py-0.5 text-xs font-medium tabular-nums text-zinc-600 shadow-sm ring-1 ring-zinc-200'>
+                <span
+                  aria-label={`${tickets.filter(ticket => ticket.status === status).length} tickets`}
+                  className='rounded-full bg-white px-2 py-0.5 text-xs font-medium tabular-nums text-zinc-600 shadow-sm ring-1 ring-zinc-200'
+                >
                   {tickets.filter(ticket => ticket.status === status).length}
                 </span>
               </div>

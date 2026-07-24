@@ -33,6 +33,7 @@ interface AssigneesSelectContentProps {
   asFormElement: boolean;
   label?: string;
   asFilter: boolean;
+  hasAppliedFilter: boolean;
 }
 
 export default function AssigneesSelect({
@@ -50,6 +51,7 @@ export default function AssigneesSelect({
         asFormElement={asFormElement}
         handleSearch={handleSearch}
         label={label}
+        hasAppliedFilter={asFilter && assigneesList.length > 0}
       />
     </AssigneesContext>
   );
@@ -60,6 +62,7 @@ function AssigneesSelectContent({
   asFormElement,
   label,
   asFilter,
+  hasAppliedFilter,
 }: AssigneesSelectContentProps) {
   const { isOpen, toggleOpen, assigneesList, addOrRemoveAssignee, close } =
     useAssignees();
@@ -103,16 +106,34 @@ function AssigneesSelectContent({
         aria-controls={`${popupId}-dialog`}
         aria-haspopup='dialog'
         aria-describedby={label ? `${popupId}-label` : undefined}
-        aria-label='Manage ticket assignees'
-        className='group inline-flex items-center gap-2 rounded-lg border border-zinc-200 bg-white px-2.5 py-1.5 text-left text-xs font-medium text-zinc-600 shadow-sm transition hover:border-zinc-300 hover:bg-zinc-50 hover:text-zinc-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2'
+        aria-label={
+          asFilter
+            ? hasAppliedFilter
+              ? 'Filter tickets by assignee, filter applied'
+              : 'Filter tickets by assignee'
+            : 'Manage ticket assignees'
+        }
+        className={`group relative inline-flex items-center gap-2 rounded-lg border px-2.5 py-1.5 text-left text-xs font-medium shadow-sm transition-[border-color,box-shadow,background-color,color] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 ${
+          hasAppliedFilter
+            ? 'border-blue-300 bg-blue-50/60 text-blue-700 hover:border-blue-400 hover:bg-blue-50'
+            : 'border-zinc-200 bg-white text-zinc-600 hover:border-zinc-300 hover:bg-zinc-50 hover:text-zinc-900'
+        }`}
       >
         <TicketAssigneeList assignees={assigneesList} compact />
         <span>
           {assigneesList.length > 0 ? 'Edit assignees' : 'Assigned people'}
         </span>
+        {hasAppliedFilter && (
+          <span
+            aria-hidden='true'
+            className='pointer-events-none absolute -right-1 -top-1 size-2.5 rounded-full bg-blue-600 ring-2 ring-white'
+          />
+        )}
         <ChevronDownIcon
           aria-hidden='true'
-          className={`size-3.5 text-zinc-400 transition-transform ${isOpen ? 'rotate-180' : ''}`}
+          className={`size-3.5 transition-transform ${
+            hasAppliedFilter ? 'text-blue-600' : 'text-zinc-400'
+          } ${isOpen ? 'rotate-180' : ''}`}
         />
       </button>
       {isOpen && (

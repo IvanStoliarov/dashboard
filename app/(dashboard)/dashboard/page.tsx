@@ -16,6 +16,7 @@ export default async function DashboardPage({
     sortby = 'due-to',
     sortdir = 'asc',
     filterbyuser,
+    search,
   } = await searchParams;
 
   if (!claims) {
@@ -46,6 +47,7 @@ export default async function DashboardPage({
       <TicketList
         sortby={Array.isArray(sortby) ? sortby.at(0) : sortby}
         sortdir={Array.isArray(sortdir) ? sortdir.at(0) : sortdir}
+        search={Array.isArray(search) ? search.at(0) : search}
         filterbyuser={
           Array.isArray(filterbyuser) ? filterbyuser.at(0) : filterbyuser
         }
