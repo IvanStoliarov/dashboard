@@ -1,8 +1,7 @@
 import { getTickets, getTicketStatuses } from '@/lib/actions';
-import { TICKET_STATUS_CONFIG } from '@/lib/ticket-status';
-import type { CSSProperties } from 'react';
-import TicketCard from '@/components/TicketCard';
 import { TicketIcon } from '@heroicons/react/24/outline';
+import StoreProvider from '@/app/StoreProvider';
+import Board from './board/Board';
 
 export default async function TicketsGrid({
   sortby,
@@ -35,45 +34,9 @@ export default async function TicketsGrid({
           </p>
         </div>
       ) : (
-        <div
-          className='grid grid-cols-1 gap-4 lg:grid-cols-[repeat(var(--status-count),minmax(0,1fr))]'
-          style={{ '--status-count': statuses.length } as CSSProperties}
-        >
-          {statuses.map(status => (
-            <section
-              key={status}
-              aria-labelledby={`${status}-tickets-heading`}
-              className='rounded-2xl border border-zinc-200 bg-zinc-50/70 p-3'
-            >
-              <div className='mb-3 flex items-center justify-between gap-3 px-1'>
-                <h2
-                  id={`${status}-tickets-heading`}
-                  className='text-sm font-semibold text-zinc-900'
-                >
-                  {TICKET_STATUS_CONFIG[status].label}
-                </h2>
-                <span
-                  aria-label={`${tickets.filter(ticket => ticket.status === status).length} tickets`}
-                  className='rounded-full bg-white px-2 py-0.5 text-xs font-medium tabular-nums text-zinc-600 shadow-sm ring-1 ring-zinc-200'
-                >
-                  {tickets.filter(ticket => ticket.status === status).length}
-                </span>
-              </div>
-              <ul
-                className='grid gap-3'
-                aria-label={`${TICKET_STATUS_CONFIG[status].label} tickets`}
-              >
-                {tickets
-                  .filter(ticket => ticket.status === status)
-                  .map(ticket => (
-                    <li key={ticket.id}>
-                      <TicketCard ticket={ticket} />
-                    </li>
-                  ))}
-              </ul>
-            </section>
-          ))}
-        </div>
+        <StoreProvider tickets={tickets} statuses={statuses}>
+          <Board statuses={statuses} />
+        </StoreProvider>
       )}
     </>
   );

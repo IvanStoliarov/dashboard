@@ -1,6 +1,6 @@
 'use client';
 import { ChevronDownIcon } from '@heroicons/react/20/solid';
-import { type Ticket } from '@/lib/types';
+import { TicketData, type Ticket } from '@/lib/types';
 import TicketStatusBadge from '../ticket/TicketStatusBadge';
 import { KeyboardEvent, useEffect, useId, useRef } from 'react';
 import {
@@ -12,15 +12,25 @@ interface StatusSelectProps {
   currentStatus: Ticket['status'];
   children: React.ReactNode;
   position?: 'right' | 'left';
+  onUpdate?:
+    | (({
+        ticketId,
+        status,
+      }: {
+        ticketId: TicketData['id'];
+        status: TicketData['status'];
+      }) => void)
+    | null;
 }
 
 export default function StatusSelect({
   currentStatus,
   children,
   position = 'left',
+  onUpdate = null,
 }: StatusSelectProps) {
   return (
-    <StatusSelectProvider>
+    <StatusSelectProvider updateCallback={onUpdate}>
       <StatusSelectContent position={position} currentStatus={currentStatus}>
         {children}
       </StatusSelectContent>

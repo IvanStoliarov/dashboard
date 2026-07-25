@@ -4,6 +4,7 @@ import { updateTicketStatus } from '@/lib/actions';
 import { Ticket } from '@/lib/types';
 import { useTransition } from 'react';
 import StatusButton from './StatusButton';
+import { useStatusSelect } from '@/lib/hooks/useStatusSelect';
 
 interface StatusButtonsListProps {
   currentStatus: Ticket['status'];
@@ -17,10 +18,16 @@ export default function StatusButtonsList({
   ticketId,
 }: StatusButtonsListProps) {
   const [isPending, startTransition] = useTransition();
+  const { close, updateCallback } = useStatusSelect();
 
   function updateStatus(status: Ticket['status']) {
     startTransition(async () => {
-      await updateTicketStatus(ticketId, status);
+      const { success } = await updateTicketStatus(ticketId, status);
+      if (!success) return;
+
+      close();
+      if (!updateCallback) return;
+      updateCallback({ ticketId, status });
     });
   }
 
