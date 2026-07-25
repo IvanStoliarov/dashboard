@@ -2,6 +2,7 @@ import {
   fetchProfileDataById,
   fetchUsersByName,
   getTicketById,
+  getTicketStatuses,
 } from '@/lib/actions';
 import { formatCreatedAtTitle } from '@/lib/format';
 import { notFound } from 'next/navigation';
@@ -28,6 +29,8 @@ export default async function TicketDetails({ id }: TicketDetailsProps) {
     : ticket?.ticket_updated_by === ticket?.created_by
       ? author
       : await fetchProfileDataById(ticket?.ticket_updated_by);
+
+  const statuses = await getTicketStatuses();
 
   const metadata = [
     { label: 'Created by', value: author?.username },
@@ -67,7 +70,11 @@ export default async function TicketDetails({ id }: TicketDetailsProps) {
             />
           </div>
           <StatusSelect currentStatus={ticket.status}>
-            <StatusButtons ticketId={ticket.id} currentStatus={ticket.status} />
+            <StatusButtons
+              statuses={statuses}
+              ticketId={ticket.id}
+              currentStatus={ticket.status}
+            />
           </StatusSelect>
         </div>
       </div>

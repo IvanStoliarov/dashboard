@@ -1,9 +1,13 @@
+'use client';
 import { CalendarDaysIcon } from '@heroicons/react/24/outline';
 import { formatCreatedAt, formatCreatedAtTitle } from '@/lib/format';
-import type { Ticket } from '@/lib/types';
+import type { Ticket, TicketData } from '@/lib/types';
 import StatusSelect from '../status/StatusSelect';
 import StatusButtons from '../status/StatusButtons';
 import CalendarPicker from '../CalendarPicker';
+import { useAppDispatch, useAppSelector } from '@/lib/hooks/store';
+import { updateTicketStatus } from '@/lib/features/tasksSlice';
+import { flushSync } from 'react-dom';
 
 interface TicketMetadataProps {
   createdAt: string;
@@ -18,11 +22,44 @@ export default function TicketMetadata({
   id,
   status,
 }: TicketMetadataProps) {
+  const statuses = useAppSelector(state => state.tasks.statuses);
+  const dispatch = useAppDispatch();
+  function onUpdate({
+    ticketId,
+    status,
+  }: {
+    ticketId: TicketData['id'];
+    status: TicketData['status'];
+  }) {
+    const commitStatusUpdate = () => {
+      flushSync(() => {
+        dispatch(updateTicketStatus({ ticketId, status }));
+      });
+    };
+    const prefersReducedMotion = window.matchMedia(
+      '(prefers-reduced-motion: reduce)',
+    ).matches;
+
+    if (!document.startViewTransition || prefersReducedMotion) {
+      commitStatusUpdate();
+      return;
+    }
+
+    document.startViewTransition(commitStatusUpdate);
+  }
   return (
     <div className='mb-3 flex flex-wrap items-center gap-2.5'>
       <div className='flex flex-col items-start gap-1.5'>
-        <StatusSelect position='left' currentStatus={status}>
-          <StatusButtons ticketId={id} currentStatus={status} />
+        <StatusSelect
+          position='left'
+          currentStatus={status}
+          onUpdate={onUpdate}
+        >
+          <StatusButtons
+            ticketId={id}
+            currentStatus={status}
+            statuses={statuses}
+          />
         </StatusSelect>
         <CalendarPicker ticketId={id} initialValue={dueTo} />
       </div>

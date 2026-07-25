@@ -23,6 +23,15 @@ body {
   outline-offset: 2px;
 }
 
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation: none;
+}
+
+::view-transition-group(*) {
+  animation-duration: 350ms;
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,

@@ -151,7 +151,7 @@ export async function getTicketById(id: Ticket['id']) {
   return data;
 }
 
-export const getTicketStatuses = cache(async () => {
+export const getTicketStatuses = cache(async (): Promise<Ticket['status'][]> => {
   const { data, error } = await getTicketStatusesAPI();
   if (error || !data) return [];
   return data;
@@ -164,6 +164,7 @@ export async function fetchProfileDataById(id: string) {
 export async function fetchAllUsers() {
   return getAllUsersAPI();
 }
+
 export async function fetchUsersByIds(ids: string[]) {
   return getUsersByIdsAPI(ids);
 }

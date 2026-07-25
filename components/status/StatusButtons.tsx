@@ -1,17 +1,17 @@
-import { getTicketStatuses } from '@/lib/actions';
 import { Ticket } from '@/lib/types';
 import StatusButtonsList from './StatusButtonsList';
 
 interface StatusButtonsProps {
   currentStatus: Ticket['status'];
   ticketId: Ticket['id'];
+  statuses: Ticket['status'][];
 }
 
-export default async function StatusButtons({
+export default function StatusButtons({
   currentStatus,
   ticketId,
+  statuses,
 }: StatusButtonsProps) {
-  const statuses = await getTicketStatuses();
   return (
     <StatusButtonsList
       currentStatus={currentStatus}
