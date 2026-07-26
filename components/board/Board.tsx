@@ -10,22 +10,31 @@ import {
   stopPending,
   updateTicketStatus,
 } from '@/lib/features/tasksSlice';
-import { TICKET_STATUS_CONFIG } from '@/lib/ticket-status';
-import type { Ticket } from '@/lib/types';
+import { isTicketStatus } from '@/lib/ticket-status';
+import type { Ticket, TicketData } from '@/lib/types';
+import toast from 'react-hot-toast';
+import { ExclamationTriangleIcon } from '@heroicons/react/24/outline';
 
 interface BoardProps {
   statuses: Ticket['status'][];
+  activeStatus?: TicketData['status'];
 }
 
-function isTicketStatus(value: unknown): value is Ticket['status'] {
-  return typeof value === 'string' && value in TICKET_STATUS_CONFIG;
-}
-
-export default function Board({ statuses }: BoardProps) {
+export default function Board({ statuses, activeStatus }: BoardProps) {
   const { isPending } = useAppSelector(state => state.tasks);
   const dispatch = useAppDispatch();
 
   async function handleDragEnd(e: DragEndEvent) {
+    if (activeStatus) {
+      toast('Clear the status filter to drag and drop tickets.', {
+        icon: (
+          <span className='flex size-8 shrink-0 items-center justify-center rounded-full bg-amber-50 text-amber-600 ring-1 ring-amber-200'>
+            <ExclamationTriangleIcon className='size-4.5' aria-hidden='true' />
+          </span>
+        ),
+      });
+      return;
+    }
     if (e.canceled) return;
     const { operation } = e;
     const ticketId = operation.source?.id;
