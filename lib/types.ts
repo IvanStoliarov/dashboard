@@ -2,6 +2,7 @@ import type { Tables } from "./database.types";
 
 export type Profile = Tables<'profiles'>
 export type Ticket = Tables<'tickets'>
+export type TicketDeadlineFilter = 'outdated' | 'today';
 
 export interface TicketAssignee {
   profile_id: Profile['id'];

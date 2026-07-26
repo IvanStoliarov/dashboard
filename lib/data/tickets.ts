@@ -1,7 +1,12 @@
 import 'server-only';
 import type { PostgrestError } from '@supabase/supabase-js';
 import { createClient } from '../supabase/server';
-import { Profile, Ticket, TicketData } from '../types';
+import {
+  Profile,
+  Ticket,
+  TicketData,
+  TicketDeadlineFilter,
+} from '../types';
 
 export async function createTicketAPI({
   title,
@@ -37,12 +42,30 @@ interface TicketQueryOptions {
   assigneeIds?: Profile['id'][];
   searchQuery?: string;
   status?: TicketData['status'];
+  deadline?: TicketDeadlineFilter;
   limit?: number;
 }
 
 interface TicketQueryResult {
   data: TicketData[] | null;
   error: PostgrestError | null;
+}
+
+const APPLICATION_TIME_ZONE =
+  process.env.APP_TIME_ZONE ?? 'Europe/Warsaw';
+
+function getCurrentCalendarDate() {
+  const parts = new Intl.DateTimeFormat('en', {
+    timeZone: APPLICATION_TIME_ZONE,
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+  }).formatToParts(new Date());
+  const dateParts = Object.fromEntries(
+    parts.map(({ type, value }) => [type, value]),
+  );
+
+  return `${dateParts.year}-${dateParts.month}-${dateParts.day}`;
 }
 
 function getIlikeFilterValue(value: string) {
@@ -58,6 +81,7 @@ async function queryTickets({
   assigneeIds,
   searchQuery,
   status,
+  deadline,
   limit,
 }: TicketQueryOptions = {}): Promise<TicketQueryResult> {
   const supabase = await createClient();
@@ -96,6 +120,15 @@ async function queryTickets({
 
   if (status !== undefined) query = query.eq('status', status);
 
+  if (deadline !== undefined) {
+    const today = getCurrentCalendarDate();
+    query =
+      deadline === 'outdated'
+        ? query.lt('due_to', today)
+        : query.eq('due_to', today);
+    query = query.neq('status', 'done');
+  }
+
   if (searchQuery !== undefined) {
     const filterValue = getIlikeFilterValue(searchQuery);
     query = query.or(
@@ -116,8 +149,9 @@ export async function getTicketsAPI(
   assigneeIds?: Profile['id'][],
   searchQuery?: string,
   status?: TicketData['status'],
+  deadline?: TicketDeadlineFilter,
 ) {
-  return queryTickets({ assigneeIds, searchQuery, status });
+  return queryTickets({ assigneeIds, searchQuery, status, deadline });
 }
 
 export async function searchTicketsAPI({

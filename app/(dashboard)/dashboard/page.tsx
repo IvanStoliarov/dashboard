@@ -19,11 +19,18 @@ export default async function DashboardPage({
     filterbyuser,
     search,
     status,
+    deadline,
   } = await searchParams;
 
   const statusString = Array.isArray(status) ? status.at(0) : status;
-
   const statusValue = isTicketStatus(statusString) ? statusString : undefined;
+  const deadlineString = Array.isArray(deadline)
+    ? deadline.at(0)
+    : deadline;
+  const deadlineValue =
+    deadlineString === 'outdated' || deadlineString === 'today'
+      ? deadlineString
+      : undefined;
 
   if (!claims) {
     redirect('/login');
@@ -55,6 +62,7 @@ export default async function DashboardPage({
         status={statusValue}
         sortdir={Array.isArray(sortdir) ? sortdir.at(0) : sortdir}
         search={Array.isArray(search) ? search.at(0) : search}
+        deadline={deadlineValue}
         filterbyuser={
           Array.isArray(filterbyuser) ? filterbyuser.at(0) : filterbyuser
         }

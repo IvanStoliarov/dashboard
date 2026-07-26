@@ -20,7 +20,12 @@ import {
   getUsersByNameAPI,
   updateUserAPI,
 } from './data/profiles';
-import type { Profile, Ticket, TicketData } from './types';
+import type {
+  Profile,
+  Ticket,
+  TicketData,
+  TicketDeadlineFilter,
+} from './types';
 import { refresh } from 'next/cache';
 import { cache } from 'react';
 import { redirect } from 'next/navigation';
@@ -142,17 +147,20 @@ export const getTickets = cache(
     filterbyuser,
     searchQuery,
     status,
+    deadline,
   }: {
     sortby?: string;
     sortdir?: string;
     filterbyuser?: string;
     searchQuery?: string;
     status?: TicketData['status'];
+    deadline?: TicketDeadlineFilter;
   } = {}) => {
     const { data, error } = await getTicketsAPI(
       getAssigneeFilterIds(filterbyuser),
       searchQuery,
       status,
+      deadline,
     );
     if (error || !data) return [];
 

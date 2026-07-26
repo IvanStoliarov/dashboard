@@ -78,7 +78,7 @@ with ticket_seed (title, description, due_offset) as (
     (
       'Add password reset flow',
       'Let users request a password-reset email and securely choose a new password from the recovery link.',
-      3
+      -3
     ),
     (
       'Improve dashboard mobile navigation',
@@ -189,3 +189,22 @@ where not exists (
   where tickets.created_by = 'b3faa131-d6f7-41e2-951d-63f88a90faa8'
     and tickets.title = ticket_seed.title
 );
+
+do $$
+begin
+  perform set_config(
+    'request.jwt.claim.sub',
+    'b3faa131-d6f7-41e2-951d-63f88a90faa8',
+    true
+  );
+
+  insert into public.ticket_assignees (ticket_id, profile_id)
+  select
+    tickets.id,
+    'b3faa131-d6f7-41e2-951d-63f88a90faa8'
+  from public.tickets
+  where tickets.created_by = 'b3faa131-d6f7-41e2-951d-63f88a90faa8'
+    and tickets.title = 'Add password reset flow'
+  on conflict (ticket_id, profile_id) do nothing;
+end
+$$;

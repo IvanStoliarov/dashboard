@@ -9,7 +9,7 @@ import AssigneeSelectSkeleton from './assigneesSelect/AssigneeSelectSkeleton';
 import { fetchUsersByName } from '@/lib/actions';
 import AssigneeSelectWrapper from './assigneesSelect/AssigneeSelectWrapper';
 import TicketSearch from './search/TicketSearch';
-import { TicketData } from '@/lib/types';
+import { TicketData, TicketDeadlineFilter } from '@/lib/types';
 import ActiveFilters from './board/ActiveFilters';
 import Spinner from './Spinner';
 
@@ -19,12 +19,14 @@ export default async function TicketList({
   filterbyuser,
   search,
   status,
+  deadline,
 }: {
   sortby: string | undefined;
   sortdir: string | undefined;
   filterbyuser: string | undefined;
   search: string | undefined;
   status?: TicketData['status'];
+  deadline?: TicketDeadlineFilter;
 }) {
   return (
     <section aria-labelledby='tickets-heading'>
@@ -44,13 +46,14 @@ export default async function TicketList({
           <TicketSearch />
         </div>
         <Suspense
-          key={`${filterbyuser}-${search}-${status}`}
+          key={`${filterbyuser}-${search}-${status}-${deadline}`}
           fallback={<TicketsCountLabelSkeleton />}
         >
           <TicketsCountLabel
             search={search}
             filterbyuser={filterbyuser}
             status={status}
+            deadline={deadline}
           />
         </Suspense>
       </div>
@@ -78,7 +81,7 @@ export default async function TicketList({
         <SortBy />
       </div>
       <Suspense
-        key={`${sortby}-${sortdir}-${filterbyuser}-${search}-${status}`}
+        key={`${sortby}-${sortdir}-${filterbyuser}-${search}-${status}-${deadline}`}
         fallback={<TicketsGridSkeleton />}
       >
         <TicketsGrid
@@ -86,6 +89,7 @@ export default async function TicketList({
           sortdir={sortdir}
           search={search}
           status={status}
+          deadline={deadline}
           filterbyuser={filterbyuser}
         />
       </Suspense>

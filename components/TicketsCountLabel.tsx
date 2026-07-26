@@ -1,20 +1,22 @@
 import { getTickets } from '@/lib/actions';
-import { isTicketStatus } from '@/lib/ticket-status';
-import { TicketData } from '@/lib/types';
+import { TicketData, TicketDeadlineFilter } from '@/lib/types';
 
 export default async function TicketsCountLabel({
   filterbyuser,
   search,
   status,
+  deadline,
 }: {
   filterbyuser?: string | undefined;
   search?: string | undefined;
   status?: TicketData['status'];
+  deadline?: TicketDeadlineFilter;
 }) {
   const tickets = await getTickets({
     filterbyuser,
     searchQuery: search,
     status: status,
+    deadline,
   });
 
   return (
