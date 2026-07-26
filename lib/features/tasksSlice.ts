@@ -5,12 +5,14 @@ interface TicketsState {
   tickets: TicketData[];
   isPending: boolean;
   statuses: ('todo' | 'in_progress' | 'qa' | 'done')[];
+  activeStatus: TicketData['status'] | undefined
 }
 
 const initialState: TicketsState = {
   tickets: [],
   isPending: false,
-  statuses: []
+  statuses: [],
+  activeStatus: undefined
 };
 
 const tasksSlice = createSlice({
@@ -22,10 +24,12 @@ const tasksSlice = createSlice({
       action: PayloadAction<{
         tickets: TicketData[];
         statuses: ('todo' | 'in_progress' | 'qa' | 'done')[];
+        activeStatus: TicketData['status']| undefined
       }>,
     ) => {
       state.tickets = action.payload.tickets;
       state.statuses = action.payload.statuses;
+      state.activeStatus = action.payload.activeStatus
     },
     updateTicketStatus: (
       state,
@@ -37,7 +41,7 @@ const tasksSlice = createSlice({
       const { ticketId, status } = action.payload;
       state.tickets = state.tickets.map(el =>
         el.id === ticketId ? { ...el, status } : el,
-      );
+      ).filter(ticket => state.activeStatus ? ticket.status === state.activeStatus : true);
     },
     startPending: state => {
       state.isPending = true;

@@ -140,11 +140,19 @@ export const getTickets = cache(
     sortby,
     sortdir,
     filterbyuser,
-    searchQuery
-  }: { sortby?: string; sortdir?: string; filterbyuser?: string, searchQuery?: string } = {}) => {
+    searchQuery,
+    status,
+  }: {
+    sortby?: string;
+    sortdir?: string;
+    filterbyuser?: string;
+    searchQuery?: string;
+    status?: TicketData['status'];
+  } = {}) => {
     const { data, error } = await getTicketsAPI(
       getAssigneeFilterIds(filterbyuser),
-      searchQuery
+      searchQuery,
+      status,
     );
     if (error || !data) return [];
 

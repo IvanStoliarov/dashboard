@@ -3,6 +3,7 @@ import { redirect } from 'next/navigation';
 import { createClient } from '@/lib/supabase/server';
 import LinkAsButton from '@/components/LinkAsButton';
 import TicketList from '@/components/TicketList';
+import { isTicketStatus } from '@/lib/ticket-status';
 
 export default async function DashboardPage({
   searchParams,
@@ -17,7 +18,12 @@ export default async function DashboardPage({
     sortdir = 'asc',
     filterbyuser,
     search,
+    status,
   } = await searchParams;
+
+  const statusString = Array.isArray(status) ? status.at(0) : status;
+
+  const statusValue = isTicketStatus(statusString) ? statusString : undefined;
 
   if (!claims) {
     redirect('/login');
@@ -46,6 +52,7 @@ export default async function DashboardPage({
       </section>
       <TicketList
         sortby={Array.isArray(sortby) ? sortby.at(0) : sortby}
+        status={statusValue}
         sortdir={Array.isArray(sortdir) ? sortdir.at(0) : sortdir}
         search={Array.isArray(search) ? search.at(0) : search}
         filterbyuser={

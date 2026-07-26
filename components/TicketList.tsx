@@ -9,17 +9,22 @@ import AssigneeSelectSkeleton from './assigneesSelect/AssigneeSelectSkeleton';
 import { fetchUsersByName } from '@/lib/actions';
 import AssigneeSelectWrapper from './assigneesSelect/AssigneeSelectWrapper';
 import TicketSearch from './search/TicketSearch';
+import { TicketData } from '@/lib/types';
+import ActiveFilters from './board/ActiveFilters';
+import Spinner from './Spinner';
 
 export default async function TicketList({
   sortby = 'due-to',
   sortdir = 'asc',
   filterbyuser,
   search,
+  status,
 }: {
   sortby: string | undefined;
   sortdir: string | undefined;
   filterbyuser: string | undefined;
   search: string | undefined;
+  status?: TicketData['status'];
 }) {
   return (
     <section aria-labelledby='tickets-heading'>
@@ -39,12 +44,20 @@ export default async function TicketList({
           <TicketSearch />
         </div>
         <Suspense
-          key={`${filterbyuser}-${search}`}
+          key={`${filterbyuser}-${search}-${status}`}
           fallback={<TicketsCountLabelSkeleton />}
         >
-          <TicketsCountLabel search={search} filterbyuser={filterbyuser} />
+          <TicketsCountLabel
+            search={search}
+            filterbyuser={filterbyuser}
+            status={status}
+          />
         </Suspense>
       </div>
+
+      <Suspense fallback={<Spinner />}>
+        <ActiveFilters />
+      </Suspense>
       <div className='flex flex-col gap-4 py-3 md:flex-row md:items-center md:justify-between'>
         <div>
           <Suspense fallback={<AssigneeSelectSkeleton />}>
@@ -64,15 +77,15 @@ export default async function TicketList({
         </div>
         <SortBy />
       </div>
-
       <Suspense
-        key={`${sortby}-${sortdir}-${filterbyuser}-${search}`}
+        key={`${sortby}-${sortdir}-${filterbyuser}-${search}-${status}`}
         fallback={<TicketsGridSkeleton />}
       >
         <TicketsGrid
           sortby={sortby}
           sortdir={sortdir}
           search={search}
+          status={status}
           filterbyuser={filterbyuser}
         />
       </Suspense>

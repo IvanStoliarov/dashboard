@@ -36,6 +36,7 @@ export async function createTicketAPI({
 interface TicketQueryOptions {
   assigneeIds?: Profile['id'][];
   searchQuery?: string;
+  status?: TicketData['status'];
   limit?: number;
 }
 
@@ -56,6 +57,7 @@ function getIlikeFilterValue(value: string) {
 async function queryTickets({
   assigneeIds,
   searchQuery,
+  status,
   limit,
 }: TicketQueryOptions = {}): Promise<TicketQueryResult> {
   const supabase = await createClient();
@@ -92,6 +94,8 @@ async function queryTickets({
 
   if (ticketIds) query = query.in('id', ticketIds);
 
+  if (status !== undefined) query = query.eq('status', status);
+
   if (searchQuery !== undefined) {
     const filterValue = getIlikeFilterValue(searchQuery);
     query = query.or(
@@ -108,8 +112,12 @@ async function queryTickets({
   return { data, error };
 }
 
-export async function getTicketsAPI(assigneeIds?: Profile['id'][], searchQuery?: string) {
-  return queryTickets({ assigneeIds, searchQuery });
+export async function getTicketsAPI(
+  assigneeIds?: Profile['id'][],
+  searchQuery?: string,
+  status?: TicketData['status'],
+) {
+  return queryTickets({ assigneeIds, searchQuery, status });
 }
 
 export async function searchTicketsAPI({
