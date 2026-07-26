@@ -69,6 +69,10 @@ values (
 )
 on conflict (provider_id, provider) do nothing;
 
+update public.profiles
+set role = 'admin'
+where id = 'b3faa131-d6f7-41e2-951d-63f88a90faa8';
+
 with ticket_seed (title, description, due_offset) as (
   values
     (

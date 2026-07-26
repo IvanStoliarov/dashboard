@@ -7,9 +7,27 @@ export async function getUserDataAPI(id: string) {
 
   const { data } = await supabase
     .from('profiles')
-    .select('email, username')
+    .select('email, username, role')
     .eq('id', id)
     .maybeSingle();
+  return data;
+}
+
+export async function getCurrentUserProfileAPI() {
+  const supabase = await createClient();
+  const {
+    data: { user },
+    error: userError,
+  } = await supabase.auth.getUser();
+
+  if (userError || !user) return null;
+
+  const { data } = await supabase
+    .from('profiles')
+    .select('email, username, role')
+    .eq('id', user.id)
+    .maybeSingle();
+
   return data;
 }
 

@@ -167,12 +167,11 @@ export async function updateTicketAPI({
   description: Ticket['description'];
 }) {
   const supabase = await createClient();
-  const { data, error } = await supabase
-    .from('tickets')
-    .update({ title, description })
-    .eq('id', id)
-    .select()
-    .single();
+  const { data, error } = await supabase.rpc('update_ticket_content', {
+    p_ticket_id: id,
+    p_title: title,
+    p_description: description,
+  });
 
   return { data, error };
 }

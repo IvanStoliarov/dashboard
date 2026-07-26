@@ -14,6 +14,7 @@ import {
 } from './data/tickets';
 import {
   getAllUsersAPI,
+  getCurrentUserProfileAPI,
   getUserDataAPI,
   getUsersByIdsAPI,
   getUsersByNameAPI,
@@ -42,6 +43,15 @@ const newTicketSchema = z.object({
   dueToDate: z.union([z.literal(''), z.iso.date('Invalid due date')]),
 });
 
+function isPermissionDenied(error: { code?: string } | null) {
+  return error?.code === '42501';
+}
+
+async function currentUserIsAdmin() {
+  const profile = await getCurrentUserProfileAPI();
+  return profile?.role === 'admin';
+}
+
 export async function createTicket(
   prevState: NewTicketFormState,
   formData: FormData,
@@ -57,6 +67,15 @@ export async function createTicket(
     assignedTo: assignedTo.join(','),
     dueToDate: String(formData.get('due_to_date')) || '',
   };
+
+  if (!(await currentUserIsAdmin())) {
+    return {
+      ...values,
+      success: false,
+      message: 'Admin role required to create tickets',
+      errors: null,
+    };
+  }
 
   const result = newTicketSchema.safeParse(values);
 
@@ -81,7 +100,9 @@ export async function createTicket(
     return {
       ...values,
       success: false,
-      message: "Couldn't create ticket",
+      message: isPermissionDenied(ticketError)
+        ? 'Admin role required to create tickets'
+        : "Couldn't create ticket",
       errors: null,
     };
 
@@ -209,7 +230,9 @@ export async function updateTicketContent(
   if (error || !data) {
     return {
       success: false,
-      message: "Couldn't update ticket",
+      message: isPermissionDenied(error)
+        ? 'Admin role required to edit ticket content'
+        : "Couldn't update ticket",
       errors: null,
     };
   }
