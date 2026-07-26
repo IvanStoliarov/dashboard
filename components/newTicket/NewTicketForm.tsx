@@ -7,7 +7,7 @@ import {
 } from '@/lib/actions';
 import { useActionState } from 'react';
 import AssigneesSelect from '../assigneesSelect/AssigneesSelect';
-import CalendarPicker from '../CalendarPicker';
+import CalendarPicker from '../calendar/CalendarPicker';
 import Error from './Error';
 import Message from './Message';
 

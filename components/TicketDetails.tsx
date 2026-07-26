@@ -10,7 +10,7 @@ import TicketContentForm from './TicketContentForm';
 import StatusSelect from './status/StatusSelect';
 import StatusButtons from './status/StatusButtons';
 import AssigneesSelect from './assigneesSelect/AssigneesSelect';
-import CalendarPicker from './CalendarPicker';
+import CalendarPicker from './calendar/CalendarPicker';
 
 interface TicketDetailsProps {
   id: string;
@@ -93,6 +93,7 @@ export default async function TicketDetails({ id }: TicketDetailsProps) {
               </dt>
               <dd className='mt-1'>
                 <CalendarPicker
+                  key={ticket.due_to}
                   ticketId={ticket.id}
                   initialValue={ticket.due_to}
                   variant='details'

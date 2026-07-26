@@ -43,6 +43,13 @@ const tasksSlice = createSlice({
         el.id === ticketId ? { ...el, status } : el,
       ).filter(ticket => state.activeStatus ? ticket.status === state.activeStatus : true);
     },
+    updateTicketDueToState(state, action : PayloadAction<{
+        ticketId: TicketData['id'];
+        newDate: TicketData['due_to'];
+      }>){
+      const {ticketId, newDate} = action.payload
+      state.tickets = state.tickets.map(ticket => ticket.id === ticketId ? {...ticket, due_to: newDate} : ticket)
+    },
     startPending: state => {
       state.isPending = true;
     },
@@ -52,7 +59,7 @@ const tasksSlice = createSlice({
   },
 });
 
-export const { initState, updateTicketStatus, startPending, stopPending } =
+export const { initState, updateTicketStatus, startPending, stopPending, updateTicketDueToState } =
   tasksSlice.actions;
 
 export default tasksSlice.reducer;
