@@ -7,7 +7,6 @@ import { useDraggable } from '@dnd-kit/react';
 
 interface TicketCardProps {
   ticket: TicketData;
-  index: number;
 }
 
 export default function TicketCard({ ticket }: TicketCardProps) {
