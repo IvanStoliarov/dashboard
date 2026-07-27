@@ -9,25 +9,22 @@ import AssigneeSelectSkeleton from './assigneesSelect/AssigneeSelectSkeleton';
 import { fetchUsersByName } from '@/lib/actions';
 import AssigneeSelectWrapper from './assigneesSelect/AssigneeSelectWrapper';
 import TicketSearch from './search/TicketSearch';
-import { TicketData, TicketDeadlineFilter } from '@/lib/types';
+import { SearchParamsPromise } from '@/lib/types';
 import ActiveFilters from './board/ActiveFilters';
 import Spinner from './Spinner';
+import { getSearchParamsValue } from '@/lib/getSearchParamsValue';
 
 export default async function TicketList({
-  sortby = 'due-to',
-  sortdir = 'asc',
-  filterbyuser,
-  search,
-  status,
-  deadline,
+  searchParamsPromise,
 }: {
-  sortby: string | undefined;
-  sortdir: string | undefined;
-  filterbyuser: string | undefined;
-  search: string | undefined;
-  status?: TicketData['status'];
-  deadline?: TicketDeadlineFilter;
+  searchParamsPromise: SearchParamsPromise;
 }) {
+  const searchParams = await searchParamsPromise;
+  const searchParamsString = JSON.stringify(
+    Object.entries(searchParams).sort(([keyA], [keyB]) =>
+      keyA.localeCompare(keyB),
+    ),
+  );
   return (
     <section aria-labelledby='tickets-heading'>
       <div className='mb-5 grid grid-cols-[1fr_auto] md:flex md:items-center md:justify-between gap-4 items-start'>
@@ -46,28 +43,31 @@ export default async function TicketList({
           <TicketSearch />
         </div>
         <Suspense
-          key={`${filterbyuser}-${search}-${status}-${deadline}`}
+          key={`count-${searchParamsString}`}
           fallback={<TicketsCountLabelSkeleton />}
         >
-          <TicketsCountLabel
-            search={search}
-            filterbyuser={filterbyuser}
-            status={status}
-            deadline={deadline}
-          />
+          <TicketsCountLabel searchParams={searchParams} />
         </Suspense>
       </div>
 
-      <Suspense fallback={<Spinner />}>
+      <Suspense
+        key={`active-filters-${searchParamsString}`}
+        fallback={<Spinner />}
+      >
         <ActiveFilters />
       </Suspense>
       <div className='flex flex-col gap-4 py-3 md:flex-row md:items-center md:justify-between'>
         <div>
-          <Suspense fallback={<AssigneeSelectSkeleton />}>
-            <AssigneeSelectWrapper filterbyuser={filterbyuser}>
+          <Suspense
+            key={`assignees-${searchParamsString}`}
+            fallback={<AssigneeSelectSkeleton />}
+          >
+            <AssigneeSelectWrapper
+              filterbyuser={getSearchParamsValue(searchParams?.filterbyuser)}
+            >
               {({ assigneeList }) => (
                 <AssigneesSelect
-                  key={filterbyuser}
+                  key={getSearchParamsValue(searchParams?.filterbyuser)}
                   assigneesList={assigneeList}
                   handleSearch={fetchUsersByName}
                   ticketId=''
@@ -81,17 +81,10 @@ export default async function TicketList({
         <SortBy />
       </div>
       <Suspense
-        key={`${sortby}-${sortdir}-${filterbyuser}-${search}-${status}-${deadline}`}
+        key={`grid-${searchParamsString}`}
         fallback={<TicketsGridSkeleton />}
       >
-        <TicketsGrid
-          sortby={sortby}
-          sortdir={sortdir}
-          search={search}
-          status={status}
-          deadline={deadline}
-          filterbyuser={filterbyuser}
-        />
+        <TicketsGrid searchParams={searchParams} />
       </Suspense>
     </section>
   );

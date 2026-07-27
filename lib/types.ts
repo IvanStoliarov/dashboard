@@ -12,3 +12,9 @@ export interface TicketAssignee {
 export interface TicketData extends Ticket {
   ticket_assignees: TicketAssignee[];
 }
+
+export type SearchParams = {
+    [key: string]: string | string[] | undefined;
+  }
+
+export type SearchParamsPromise = Promise<SearchParams>

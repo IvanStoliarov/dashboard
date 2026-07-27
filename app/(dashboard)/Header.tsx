@@ -1,20 +1,15 @@
 import HeaderUserCard from '@/components/HeaderUserCard';
-import { createClient } from '@/lib/supabase/server';
-import { redirect } from 'next/navigation';
-import Nav from './Nav';
+import HeaderUserCardSkeleton from '@/components/HeaderUserCardSkeleton';
+import Nav from '../../components/dashboard/Nav';
+import { Suspense } from 'react';
 
-export default async function Header() {
-  const supabase = await createClient();
-  const { data } = await supabase.auth.getClaims();
-  const claims = data?.claims;
-
-  if (!claims) {
-    redirect('/login');
-  }
+export default function Header() {
   return (
     <header className='flex items-center justify-between rounded-2xl border border-zinc-200 bg-white px-5 py-4 shadow-sm'>
       <Nav />
-      <HeaderUserCard userId={claims.sub} />
+      <Suspense fallback={<HeaderUserCardSkeleton />}>
+        <HeaderUserCard />
+      </Suspense>
     </header>
   );
 }

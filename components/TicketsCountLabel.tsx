@@ -1,22 +1,27 @@
 import { getTickets } from '@/lib/actions';
-import { TicketData, TicketDeadlineFilter } from '@/lib/types';
+import { getSearchParamsValue } from '@/lib/getSearchParamsValue';
+import { isTicketStatus } from '@/lib/ticket-status';
+import { SearchParams } from '@/lib/types';
 
 export default async function TicketsCountLabel({
-  filterbyuser,
-  search,
-  status,
-  deadline,
+  searchParams,
 }: {
-  filterbyuser?: string | undefined;
-  search?: string | undefined;
-  status?: TicketData['status'];
-  deadline?: TicketDeadlineFilter;
+  searchParams: SearchParams;
 }) {
+  const statusString = getSearchParamsValue(searchParams?.status);
+  const statusValue = isTicketStatus(statusString) ? statusString : undefined;
+
+  const deadlineString = getSearchParamsValue(searchParams?.deadline);
+  const deadlineValue =
+    deadlineString === 'outdated' || deadlineString === 'today'
+      ? deadlineString
+      : undefined;
+
   const tickets = await getTickets({
-    filterbyuser,
-    searchQuery: search,
-    status: status,
-    deadline,
+    filterbyuser: getSearchParamsValue(searchParams?.filterbyuser),
+    searchQuery: getSearchParamsValue(searchParams?.search),
+    status: statusValue,
+    deadline: deadlineValue,
   });
 
   return (

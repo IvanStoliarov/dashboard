@@ -2,33 +2,34 @@ import { getTickets, getTicketStatuses } from '@/lib/actions';
 import { TicketIcon } from '@heroicons/react/24/outline';
 import StoreProvider from '@/app/StoreProvider';
 import Board from './board/Board';
-import { TicketData, TicketDeadlineFilter } from '@/lib/types';
+import { SearchParams } from '@/lib/types';
 import { Activity } from 'react';
+import { getSearchParamsValue } from '@/lib/getSearchParamsValue';
+import { isTicketStatus } from '@/lib/ticket-status';
 
 export default async function TicketsGrid({
-  sortby,
-  sortdir,
-  filterbyuser,
-  search,
-  status,
-  deadline,
+  searchParams,
 }: {
-  sortby: string;
-  sortdir: string;
-  filterbyuser: string | undefined;
-  search: string | undefined;
-  status?: TicketData['status'];
-  deadline?: TicketDeadlineFilter;
+  searchParams: SearchParams;
 }) {
+  const statusString = getSearchParamsValue(searchParams?.status);
+  const statusValue = isTicketStatus(statusString) ? statusString : undefined;
+
+  const deadlineString = getSearchParamsValue(searchParams?.deadline);
+  const deadlineValue =
+    deadlineString === 'outdated' || deadlineString === 'today'
+      ? deadlineString
+      : undefined;
+
   const [statuses, tickets] = await Promise.all([
     getTicketStatuses(),
     getTickets({
-      sortby,
-      sortdir,
-      filterbyuser,
-      searchQuery: search,
-      status,
-      deadline,
+      sortby: getSearchParamsValue(searchParams?.sortby),
+      sortdir: getSearchParamsValue(searchParams?.sortdir),
+      filterbyuser: getSearchParamsValue(searchParams?.filterbyuser),
+      searchQuery: getSearchParamsValue(searchParams?.search),
+      status: statusValue,
+      deadline: deadlineValue,
     }),
   ]);
 
@@ -40,16 +41,16 @@ export default async function TicketsGrid({
             <TicketIcon aria-hidden='true' className='size-5' />
           </span>
           <h2 className='text-sm font-semibold text-zinc-900'>
-            {deadline
-              ? `No ${deadline === 'outdated' ? 'outdated' : 'due today'} tickets`
-              : status
+            {deadlineValue
+              ? `No ${deadlineValue === 'outdated' ? 'outdated' : 'due today'} tickets`
+              : statusValue
                 ? 'No tickets match this status'
                 : 'No tickets yet'}
           </h2>
           <p className='mx-auto mt-1 max-w-sm text-sm leading-6 text-zinc-600'>
-            {deadline
+            {deadlineValue
               ? 'Clear the deadline filter to view tickets with other due dates.'
-              : status
+              : statusValue
                 ? 'Clear the status filter to view tickets in other columns.'
                 : 'Create your first ticket to start tracking work with your team.'}
           </p>
@@ -59,9 +60,9 @@ export default async function TicketsGrid({
         <StoreProvider
           tickets={tickets}
           statuses={statuses}
-          activeStatus={status}
+          activeStatus={statusValue}
         >
-          <Board statuses={statuses} activeStatus={status} />
+          <Board statuses={statuses} activeStatus={statusValue} />
         </StoreProvider>
       </Activity>
     </>
