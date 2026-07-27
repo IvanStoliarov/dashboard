@@ -2,6 +2,7 @@ import {
   fetchProfileDataById,
   fetchUsersByName,
   getTicketById,
+  getTicketPriorities,
   getTicketStatuses,
 } from '@/lib/actions';
 import { formatCreatedAtTitle } from '@/lib/format';
@@ -11,6 +12,7 @@ import StatusSelect from './status/StatusSelect';
 import StatusButtons from './status/StatusButtons';
 import AssigneesSelect from './assigneesSelect/AssigneesSelect';
 import CalendarPicker from './calendar/CalendarPicker';
+import PrioritySelect from './priority/PrioritySelect';
 
 interface TicketDetailsProps {
   id: string;
@@ -30,7 +32,10 @@ export default async function TicketDetails({ id }: TicketDetailsProps) {
       ? author
       : await fetchProfileDataById(ticket?.ticket_updated_by);
 
-  const statuses = await getTicketStatuses();
+  const [statuses, priorities] = await Promise.all([
+    getTicketStatuses(),
+    getTicketPriorities(),
+  ]);
 
   const metadata = [
     { label: 'Created by', value: author?.username },
@@ -100,6 +105,11 @@ export default async function TicketDetails({ id }: TicketDetailsProps) {
                 />
               </dd>
             </div>
+            <PrioritySelect
+              currentPriority={ticket.priority}
+              priorities={priorities}
+              ticketId={ticket.id}
+            />
             {metadata.map(item => (
               <div key={item.label}>
                 <dt className='text-xs font-medium uppercase tracking-wide text-zinc-400'>

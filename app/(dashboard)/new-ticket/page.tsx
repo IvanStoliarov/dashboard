@@ -1,8 +1,10 @@
 import React, { Suspense } from 'react';
 import NewTicketForm from '@/components/newTicket/NewTicketForm';
 import NewTicketFormSkeleton from '@/components/newTicket/NewTicketFormSkeleton';
+import { getTicketPriorities } from '@/lib/actions';
 
 export default async function NewTicket() {
+  const ticketPrioritiesPromise = getTicketPriorities();
   return (
     <div className='mx-auto max-w-2xl'>
       <header className='border-b border-zinc-100 pb-6'>
@@ -16,7 +18,7 @@ export default async function NewTicket() {
         </p>
       </header>
       <Suspense fallback={<NewTicketFormSkeleton />}>
-        <NewTicketForm />
+        <NewTicketForm ticketPrioritiesPromise={ticketPrioritiesPromise} />
       </Suspense>
     </div>
   );

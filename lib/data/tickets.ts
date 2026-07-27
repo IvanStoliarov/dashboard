@@ -1,23 +1,20 @@
 import 'server-only';
 import type { PostgrestError } from '@supabase/supabase-js';
 import { createClient } from '../supabase/server';
-import {
-  Profile,
-  Ticket,
-  TicketData,
-  TicketDeadlineFilter,
-} from '../types';
+import { Profile, Ticket, TicketData, TicketDeadlineFilter } from '../types';
 
 export async function createTicketAPI({
   title,
   description,
   assignedTo,
   dueTo,
+  priority
 }: {
   title: Ticket['title'];
   description: Ticket['description'];
   assignedTo: Profile['id'][];
   dueTo: Ticket['due_to'];
+  priority: Ticket['priority']
 }) {
   const supabase = await createClient();
 
@@ -28,11 +25,12 @@ export async function createTicketAPI({
       p_description: description,
       p_assigned_to: assignedTo,
       p_due_to: dueTo,
+      p_priority: priority,
     },
   );
 
   if (error) {
-    console.log(error)
+    console.log(error);
   }
 
   return { ticketId, error };
@@ -51,8 +49,7 @@ interface TicketQueryResult {
   error: PostgrestError | null;
 }
 
-const APPLICATION_TIME_ZONE =
-  process.env.APP_TIME_ZONE ?? 'Europe/Warsaw';
+const APPLICATION_TIME_ZONE = process.env.APP_TIME_ZONE ?? 'Europe/Warsaw';
 
 function getCurrentCalendarDate() {
   const parts = new Intl.DateTimeFormat('en', {
@@ -101,10 +98,8 @@ async function queryTickets({
     if (ticketIds.length === 0) return { data: [], error: null };
   }
 
-  let query = supabase
-    .from('tickets')
-    .select(
-      `
+  let query = supabase.from('tickets').select(
+    `
       *,
       ticket_assignees (
         profile_id,
@@ -114,7 +109,7 @@ async function queryTickets({
         )
       )
     `,
-    );
+  );
 
   if (ticketIds) query = query.in('id', ticketIds);
 
@@ -199,6 +194,13 @@ export async function getTicketStatusesAPI() {
   return { data, error };
 }
 
+export async function getTicketPrioritiesAPI() {
+  const supabase = await createClient();
+  const { data, error } = await supabase.rpc('get_ticket_priorities');
+
+  return { data, error };
+}
+
 export async function updateTicketAPI({
   id,
   title,
@@ -229,6 +231,24 @@ export async function updateTicketStatusAPI({
   const { data, error } = await supabase
     .from('tickets')
     .update({ status })
+    .eq('id', id)
+    .select()
+    .single();
+
+  return { data, error };
+}
+
+export async function updateTicketPriorityAPI({
+  id,
+  priority,
+}: {
+  id: Ticket['id'];
+  priority: Ticket['priority'];
+}) {
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from('tickets')
+    .update({ priority })
     .eq('id', id)
     .select()
     .single();

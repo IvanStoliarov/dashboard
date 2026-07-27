@@ -5,11 +5,13 @@ import {
   fetchUsersByName,
   NewTicketFormState,
 } from '@/lib/actions';
-import { useActionState } from 'react';
+import { use, useActionState } from 'react';
 import AssigneesSelect from '../assigneesSelect/AssigneesSelect';
 import CalendarPicker from '../calendar/CalendarPicker';
 import Error from './Error';
 import Message from './Message';
+import PrioritySelect from '../priority/PrioritySelect';
+import type { TicketPriority } from '@/lib/ticket-priority';
 
 const initialState: NewTicketFormState = {
   title: '',
@@ -21,7 +23,12 @@ const initialState: NewTicketFormState = {
   errors: null,
 };
 
-export default function NewTicketForm() {
+export default function NewTicketForm({
+  ticketPrioritiesPromise,
+}: {
+  ticketPrioritiesPromise: Promise<TicketPriority[]>;
+}) {
+  const priorities = use(ticketPrioritiesPromise);
   const [state, formAction, isPending] = useActionState(
     createTicket,
     initialState,
@@ -73,6 +80,11 @@ export default function NewTicketForm() {
         {state.errors?.description && (
           <Error errors={state.errors.description} />
         )}
+      </div>
+
+      <div>
+        <PrioritySelect priorities={priorities} />
+        {state.errors?.priority && <Error errors={state.errors.priority} />}
       </div>
 
       <AssigneesSelect

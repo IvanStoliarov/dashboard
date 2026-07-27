@@ -11,6 +11,7 @@ import {
   updateTicketStatus,
 } from '@/lib/features/tasksSlice';
 import { flushSync } from 'react-dom';
+import TicketPriority from './TicketPriority';
 
 interface TicketMetadataProps {
   createdAt: string;
@@ -26,7 +27,10 @@ export default function TicketMetadata({
   status,
 }: TicketMetadataProps) {
   const statuses = useAppSelector(state => state.tasks.statuses);
+  const tickets = useAppSelector(state => state.tasks.tickets);
   const dispatch = useAppDispatch();
+
+  const ticketData = tickets.find(ticket => ticket.id === id);
 
   function onUpdateStatus({
     ticketId,
@@ -62,6 +66,8 @@ export default function TicketMetadata({
     dispatch(updateTicketDueToState({ ticketId, newDate }));
   }
 
+  if (!ticketData) return null;
+
   return (
     <div className='mb-3 flex flex-wrap items-center gap-2.5'>
       <div className='flex flex-col items-start gap-1.5'>
@@ -82,6 +88,7 @@ export default function TicketMetadata({
           ticketId={id}
           initialValue={dueTo}
         />
+        <TicketPriority priority={ticketData.priority} />
       </div>
       <time
         dateTime={createdAt}
