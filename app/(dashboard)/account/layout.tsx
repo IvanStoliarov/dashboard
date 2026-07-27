@@ -1,5 +1,4 @@
 import NavLink from '@/components/NavLink';
-import Link from 'next/link';
 import React from 'react';
 
 export default function AccountLayout({

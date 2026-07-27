@@ -1,6 +1,7 @@
 import AssignedTicketsCard from '@/components/account/AssignedTicketsCard';
 import TicketsCount from '@/components/account/TicketsCount';
 import Spinner from '@/components/Spinner';
+import { getTickets } from '@/lib/actions';
 import { createClient } from '@/lib/supabase/server';
 import { redirect } from 'next/navigation';
 import { Suspense } from 'react';
@@ -9,7 +10,10 @@ export default async function AccountPage() {
   const supabase = await createClient();
   const { data, error } = await supabase.auth.getUser();
   if (error || !data.user) redirect('/login');
-
+  const userId = data.user.id;
+  const assignedTickets = await getTickets({
+    filterbyuser: userId,
+  });
   return (
     <>
       <header className='border-b border-zinc-100 pb-6'>
@@ -35,18 +39,24 @@ export default async function AccountPage() {
                 </AssignedTicketsCard.Title>
                 <AssignedTicketsCard.Content>
                   <Suspense fallback={<Spinner />}>
-                    <TicketsCount deadline='outdated' />
+                    <TicketsCount
+                      assignedTickets={assignedTickets}
+                      userId={userId}
+                      deadline='outdated'
+                    />
                   </Suspense>
                 </AssignedTicketsCard.Content>
               </AssignedTicketsCard>
 
               <AssignedTicketsCard variant='warning'>
-                <AssignedTicketsCard.Title>
-                  Due today
-                </AssignedTicketsCard.Title>
+                <AssignedTicketsCard.Title>Due today</AssignedTicketsCard.Title>
                 <AssignedTicketsCard.Content>
                   <Suspense fallback={<Spinner />}>
-                    <TicketsCount deadline='today' />
+                    <TicketsCount
+                      assignedTickets={assignedTickets}
+                      userId={userId}
+                      deadline='today'
+                    />
                   </Suspense>
                 </AssignedTicketsCard.Content>
               </AssignedTicketsCard>
@@ -64,7 +74,10 @@ export default async function AccountPage() {
                 </AssignedTicketsCard.Title>
                 <AssignedTicketsCard.Content>
                   <Suspense fallback={<Spinner />}>
-                    <TicketsCount />
+                    <TicketsCount
+                      assignedTickets={assignedTickets}
+                      userId={userId}
+                    />
                   </Suspense>
                 </AssignedTicketsCard.Content>
               </AssignedTicketsCard>
@@ -75,7 +88,11 @@ export default async function AccountPage() {
                 </AssignedTicketsCard.Title>
                 <AssignedTicketsCard.Content>
                   <Suspense fallback={<Spinner />}>
-                    <TicketsCount status='todo' />
+                    <TicketsCount
+                      assignedTickets={assignedTickets}
+                      userId={userId}
+                      status='todo'
+                    />
                   </Suspense>
                 </AssignedTicketsCard.Content>
               </AssignedTicketsCard>
@@ -86,7 +103,11 @@ export default async function AccountPage() {
                 </AssignedTicketsCard.Title>
                 <AssignedTicketsCard.Content>
                   <Suspense fallback={<Spinner />}>
-                    <TicketsCount status='in_progress' />
+                    <TicketsCount
+                      assignedTickets={assignedTickets}
+                      userId={userId}
+                      status='in_progress'
+                    />
                   </Suspense>
                 </AssignedTicketsCard.Content>
               </AssignedTicketsCard>
@@ -97,7 +118,11 @@ export default async function AccountPage() {
                 </AssignedTicketsCard.Title>
                 <AssignedTicketsCard.Content>
                   <Suspense fallback={<Spinner />}>
-                    <TicketsCount status='qa' />
+                    <TicketsCount
+                      assignedTickets={assignedTickets}
+                      userId={userId}
+                      status='qa'
+                    />
                   </Suspense>
                 </AssignedTicketsCard.Content>
               </AssignedTicketsCard>
@@ -108,7 +133,11 @@ export default async function AccountPage() {
                 </AssignedTicketsCard.Title>
                 <AssignedTicketsCard.Content>
                   <Suspense fallback={<Spinner />}>
-                    <TicketsCount status='done' />
+                    <TicketsCount
+                      assignedTickets={assignedTickets}
+                      userId={userId}
+                      status='done'
+                    />
                   </Suspense>
                 </AssignedTicketsCard.Content>
               </AssignedTicketsCard>
