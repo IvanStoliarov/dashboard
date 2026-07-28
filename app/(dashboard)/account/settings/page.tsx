@@ -1,17 +1,7 @@
-import EditForm from '@/components/account/EditForm';
-import EditFormMessage from '@/components/account/EditFormMessage';
-import FormField from '@/components/account/FormField';
-import { fetchProfileDataById } from '@/lib/actions';
-import { createClient } from '@/lib/supabase/server';
-import { redirect } from 'next/navigation';
+import AccountEditFormContainer from '@/components/account/AccountEditFormContainer';
+import { Suspense } from 'react';
 
 export default async function AccountPage() {
-  const supabase = await createClient();
-  const { data, error } = await supabase.auth.getUser();
-  if (error || !data.user) redirect('/login');
-
-  const profile = await fetchProfileDataById(data.user.id);
-
   return (
     <>
       <header className='border-b border-zinc-100 pb-6'>
@@ -34,15 +24,9 @@ export default async function AccountPage() {
           </p>
         </div>
         <div className='p-5 sm:p-6'>
-          <EditForm>
-            <>
-              <FormField
-                name='userName'
-                defaultValue={profile?.username || ''}
-              />
-              <EditFormMessage />
-            </>
-          </EditForm>
+          <Suspense fallback={<p>Loading...</p>}>
+            <AccountEditFormContainer />
+          </Suspense>
         </div>
       </section>
     </>
