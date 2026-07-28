@@ -15,14 +15,15 @@ function filterByDeadline(date: string | null, filter: TicketDeadlineFilter) {
 export default async function TicketsCount({
   status = undefined,
   deadline,
-  assignedTickets,
   userId,
+  assignedTicketsPromise,
 }: {
   status?: TicketData['status'];
   deadline?: TicketDeadlineFilter;
-  assignedTickets: TicketData[];
   userId: User['id'];
+  assignedTicketsPromise: Promise<TicketData[]>;
 }) {
+  const assignedTickets = await assignedTicketsPromise;
   const ticketCount = status
     ? assignedTickets.filter(ticket => ticket.status === status).length
     : deadline
