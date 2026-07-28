@@ -18,7 +18,6 @@ export default function StoreProvider({
   statuses,
   activeStatus,
 }: StoreProviderProps) {
-  console.log(activeStatus);
   const [store] = useState<AppStore>(() => {
     const newStore = makeStore();
     newStore.dispatch(initState({ tickets, statuses, activeStatus }));
