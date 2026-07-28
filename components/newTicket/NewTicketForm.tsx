@@ -5,13 +5,13 @@ import {
   fetchUsersByName,
   NewTicketFormState,
 } from '@/lib/actions';
-import { use, useActionState } from 'react';
+import { use, useActionState, useEffect } from 'react';
 import AssigneesSelect from '../assigneesSelect/AssigneesSelect';
 import CalendarPicker from '../calendar/CalendarPicker';
 import Error from './Error';
-import Message from './Message';
 import PrioritySelect from '../priority/PrioritySelect';
 import type { TicketPriority } from '@/lib/ticket-priority';
+import toast from 'react-hot-toast';
 
 const initialState: NewTicketFormState = {
   title: '',
@@ -33,6 +33,16 @@ export default function NewTicketForm({
     createTicket,
     initialState,
   );
+
+  useEffect(() => {
+    if (!state.message) return;
+
+    if (state.success) {
+      toast.success(state.message);
+    } else {
+      toast.error(state.message);
+    }
+  }, [state]);
 
   return (
     <form action={formAction} className='mt-8 space-y-6' aria-busy={isPending}>
@@ -110,10 +120,6 @@ export default function NewTicketForm({
           {isPending ? 'Creating ticket...' : 'Create ticket'}
         </Button>
       </div>
-
-      {state.message && (
-        <Message isSuccess={state.success} message={state.message} />
-      )}
     </form>
   );
 }
