@@ -33,6 +33,7 @@ import { cache } from 'react';
 import { redirect } from 'next/navigation';
 import { validateUsername } from './validation/username';
 import { TICKET_PRIORITY_VALUES } from './ticket-priority';
+import { createClient } from './supabase/server';
 
 export interface NewTicketFormState {
   success: boolean;
@@ -407,6 +408,11 @@ export async function updateUser(
 
   const userName = usernameResult.username;
   const { data, error } = await updateUserAPI({ userName });
+
+  const supabase = await createClient();
+  const { error: refreshError } = await supabase.auth.refreshSession();
+
+  if (refreshError) throw refreshError;
 
   if (!data || error) {
     return {

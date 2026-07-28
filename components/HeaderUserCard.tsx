@@ -1,5 +1,4 @@
 import { logout } from '@/app/auth/actions';
-import { fetchProfileDataById } from '@/lib/actions';
 import { ChevronDownIcon } from '@heroicons/react/24/outline';
 import PopoverLink from '@/components/PopoverLink';
 import { createClient } from '@/lib/supabase/server';
@@ -7,14 +6,9 @@ import { createClient } from '@/lib/supabase/server';
 export default async function HeaderUserCard() {
   const supabase = await createClient();
   const { data } = await supabase.auth.getClaims();
-  const userId = data?.claims.sub;
-  if (!userId) return null;
+  const userName = data?.claims?.user_metadata?.username;
 
-  const profile = await fetchProfileDataById(userId);
-  if (!profile) return null;
-
-  const { username } = profile;
-  const displayName = username || 'User';
+  const displayName = userName || 'User';
   const initial = displayName.at(0)?.toUpperCase() || 'U';
 
   return (

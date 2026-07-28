@@ -108,5 +108,17 @@ export async function updateUserAPI({
     .select()
     .single();
 
-  return { data, error };
+  if (error || !data) {
+    return { data: null, error };
+  }
+
+  const { error: metadataError } = await supabase.auth.updateUser({
+    data: { username: userName },
+  });
+
+  if (metadataError) {
+    return { data: null, error: metadataError };
+  }
+
+  return { data, error: null };
 }
