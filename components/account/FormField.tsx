@@ -1,13 +1,21 @@
 'use client';
-import { useEditForm } from './accountEditFormContext';
-
 interface FormFieldProps {
   defaultValue: string;
   name: string;
+  errors:
+    | {
+        [key: string]: string[];
+      }
+    | undefined;
+  isPending: boolean;
 }
 
-export default function FormField({ defaultValue, name }: FormFieldProps) {
-  const { errors, isPending } = useEditForm();
+export default function FormField({
+  defaultValue,
+  name,
+  errors,
+  isPending,
+}: FormFieldProps) {
   const errorId = `${name}-error`;
 
   return (

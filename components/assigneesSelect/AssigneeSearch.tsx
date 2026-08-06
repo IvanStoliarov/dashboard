@@ -65,7 +65,7 @@ export default function AssigneeSearch({
     <div className='space-y-2'>
       <label
         htmlFor='assignee-search'
-        className='text-xs font-medium text-zinc-700'
+        className='text-xs font-medium text-zinc-700 inline-block mb-1'
       >
         Search teammates
       </label>

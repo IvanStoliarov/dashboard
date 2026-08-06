@@ -28,3 +28,9 @@ export const TICKET_STATUS_CONFIG = {
     dotClassName: 'bg-emerald-500',
   },
 } satisfies Record<Ticket['status'], TicketStatusConfig>;
+
+export function isTicketStatus(value: unknown): value is Ticket['status'] {
+  return (
+    typeof value === 'string' && Object.hasOwn(TICKET_STATUS_CONFIG, value)
+  );
+}

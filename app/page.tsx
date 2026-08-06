@@ -1,10 +1,10 @@
-import { createClient } from '@/lib/supabase/server';
+import HomePageGuestContent from '@/components/home/HomePageGuestContent';
+import HomePageHeroActionSkeleton from '@/components/home/HomePageHeroActionSkeleton';
+import HomePageNavActionsSkeleton from '@/components/home/HomePageNavActionsSkeleton';
 import Link from 'next/link';
+import { Suspense } from 'react';
 
-export default async function Home() {
-  const client = await createClient();
-  const claims = await client.auth.getClaims();
-  const isAuthenticated = claims.data?.claims.sub;
+export default function Home() {
   return (
     <main
       id='main-content'
@@ -19,23 +19,25 @@ export default async function Home() {
             Dashboard
           </span>
           <div className='flex items-center gap-2'>
-            {!isAuthenticated && (
-              <>
-                {' '}
-                <Link
-                  href='/login'
-                  className='rounded-lg px-3.5 py-2 text-sm font-medium text-zinc-700 transition hover:bg-zinc-200/70'
-                >
-                  Sign in
-                </Link>
-                <Link
-                  href='/signup'
-                  className='rounded-lg bg-zinc-950 px-3.5 py-2 text-sm font-medium text-white transition hover:bg-zinc-800'
-                >
-                  Get started
-                </Link>
-              </>
-            )}
+            <Suspense fallback={<HomePageNavActionsSkeleton />}>
+              <HomePageGuestContent>
+                <>
+                  {' '}
+                  <Link
+                    href='/login'
+                    className='rounded-lg px-3.5 py-2 text-sm font-medium text-zinc-700 transition hover:bg-zinc-200/70'
+                  >
+                    Sign in
+                  </Link>
+                  <Link
+                    href='/signup'
+                    className='rounded-lg bg-zinc-950 px-3.5 py-2 text-sm font-medium text-white transition hover:bg-zinc-800'
+                  >
+                    Get started
+                  </Link>
+                </>
+              </HomePageGuestContent>
+            </Suspense>
           </div>
         </nav>
 
@@ -52,14 +54,16 @@ export default async function Home() {
               sessions validated and refreshed on the server.
             </p>
             <div className='mt-9 flex flex-wrap gap-3'>
-              {!isAuthenticated && (
-                <Link
-                  href='/signup'
-                  className='rounded-lg bg-zinc-950 px-5 py-3 text-sm font-medium text-white transition hover:bg-zinc-800'
-                >
-                  Create account
-                </Link>
-              )}
+              <Suspense fallback={<HomePageHeroActionSkeleton />}>
+                <HomePageGuestContent>
+                  <Link
+                    href='/signup'
+                    className='rounded-lg bg-zinc-950 px-5 py-3 text-sm font-medium text-white transition hover:bg-zinc-800'
+                  >
+                    Create account
+                  </Link>
+                </HomePageGuestContent>
+              </Suspense>
               <Link
                 href='/dashboard'
                 className='rounded-lg border border-zinc-300 bg-white px-5 py-3 text-sm font-medium text-zinc-800 transition hover:border-zinc-400'

@@ -1,24 +1,26 @@
 'use client';
 
 import { updateTicketStatus } from '@/lib/actions';
-import { Ticket } from '@/lib/types';
+import { type Ticket, type TicketData } from '@/lib/types';
 import { useTransition } from 'react';
 import StatusButton from './StatusButton';
-import { useStatusSelect } from '@/lib/hooks/useStatusSelect';
+import { useSelect } from '@/lib/hooks/useSelect';
 
 interface StatusButtonsListProps {
   currentStatus: Ticket['status'];
   statuses: Ticket['status'][];
   ticketId: Ticket['id'];
+  onUpdate?: ((update: { ticketId: TicketData['id']; status: TicketData['status'] }) => void) | null;
 }
 
 export default function StatusButtonsList({
   currentStatus,
   statuses,
   ticketId,
+  onUpdate,
 }: StatusButtonsListProps) {
   const [isPending, startTransition] = useTransition();
-  const { close, updateCallback } = useStatusSelect();
+  const { close } = useSelect();
 
   function updateStatus(status: Ticket['status']) {
     startTransition(async () => {
@@ -26,8 +28,7 @@ export default function StatusButtonsList({
       if (!success) return;
 
       close();
-      if (!updateCallback) return;
-      updateCallback({ ticketId, status });
+      onUpdate?.({ ticketId, status });
     });
   }
 

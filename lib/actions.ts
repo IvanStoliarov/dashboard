@@ -4,26 +4,36 @@ import z from 'zod';
 import {
   createTicketAPI,
   getTicketByIdAPI,
+  getTicketPrioritiesAPI,
   getTicketStatusesAPI,
   getTicketsAPI,
   searchTicketsAPI,
   updateTicketAPI,
   updateTicketAssigneeListAPI,
   updateTicketDueToAPI,
+  updateTicketPriorityAPI,
   updateTicketStatusAPI,
 } from './data/tickets';
 import {
   getAllUsersAPI,
+  getCurrentUserProfileAPI,
   getUserDataAPI,
   getUsersByIdsAPI,
   getUsersByNameAPI,
   updateUserAPI,
 } from './data/profiles';
-import type { Profile, Ticket, TicketData } from './types';
+import type {
+  Profile,
+  Ticket,
+  TicketData,
+  TicketDeadlineFilter,
+} from './types';
 import { refresh } from 'next/cache';
 import { cache } from 'react';
 import { redirect } from 'next/navigation';
 import { validateUsername } from './validation/username';
+import { TICKET_PRIORITY_VALUES } from './ticket-priority';
+import { createClient } from './supabase/server';
 
 export interface NewTicketFormState {
   success: boolean;
@@ -35,12 +45,24 @@ export interface NewTicketFormState {
   dueToDate: string;
 }
 
+const ticketPrioritySchema = z.enum(TICKET_PRIORITY_VALUES);
+
 const newTicketSchema = z.object({
   title: z.string('Not a string').min(5, 'Minimum 5 symbols'),
   description: z.string('Not a string').min(5, 'Minimum 5 symbols'),
   assignedTo: z.optional(z.string()),
   dueToDate: z.union([z.literal(''), z.iso.date('Invalid due date')]),
+  priority: ticketPrioritySchema,
 });
+
+function isPermissionDenied(error: { code?: string } | null) {
+  return error?.code === '42501';
+}
+
+async function currentUserIsAdmin() {
+  const profile = await getCurrentUserProfileAPI();
+  return profile?.role === 'admin';
+}
 
 export async function createTicket(
   prevState: NewTicketFormState,
@@ -56,7 +78,17 @@ export async function createTicket(
     description: String(formData.get('description')) || '',
     assignedTo: assignedTo.join(','),
     dueToDate: String(formData.get('due_to_date')) || '',
+    priority: String(formData.get('priority')) || '',
   };
+
+  if (!(await currentUserIsAdmin())) {
+    return {
+      ...values,
+      success: false,
+      message: 'Admin role required to create tickets',
+      errors: null,
+    };
+  }
 
   const result = newTicketSchema.safeParse(values);
 
@@ -69,19 +101,22 @@ export async function createTicket(
       errors,
     };
   }
-  const { title, description, dueToDate } = values;
+  const { title, description, dueToDate, priority } = result.data;
 
   const { ticketId, error: ticketError } = await createTicketAPI({
     title,
     description,
     assignedTo,
     dueTo: dueToDate || null,
+    priority,
   });
   if (ticketError || !ticketId)
     return {
       ...values,
       success: false,
-      message: "Couldn't create ticket",
+      message: isPermissionDenied(ticketError)
+        ? 'Admin role required to create tickets'
+        : "Couldn't create ticket",
       errors: null,
     };
 
@@ -119,11 +154,22 @@ export const getTickets = cache(
     sortby,
     sortdir,
     filterbyuser,
-    searchQuery
-  }: { sortby?: string; sortdir?: string; filterbyuser?: string, searchQuery?: string } = {}) => {
+    searchQuery,
+    status,
+    deadline,
+  }: {
+    sortby?: string;
+    sortdir?: string;
+    filterbyuser?: string;
+    searchQuery?: string;
+    status?: TicketData['status'];
+    deadline?: TicketDeadlineFilter;
+  } = {}) => {
     const { data, error } = await getTicketsAPI(
       getAssigneeFilterIds(filterbyuser),
-      searchQuery
+      searchQuery,
+      status,
+      deadline,
     );
     if (error || !data) return [];
 
@@ -151,11 +197,21 @@ export async function getTicketById(id: Ticket['id']) {
   return data;
 }
 
-export const getTicketStatuses = cache(async (): Promise<Ticket['status'][]> => {
-  const { data, error } = await getTicketStatusesAPI();
-  if (error || !data) return [];
-  return data;
-});
+export const getTicketStatuses = cache(
+  async (): Promise<Ticket['status'][]> => {
+    const { data, error } = await getTicketStatusesAPI();
+    if (error || !data) return [];
+    return data;
+  },
+);
+
+export const getTicketPriorities = cache(
+  async (): Promise<Ticket['priority'][]> => {
+    const { data, error } = await getTicketPrioritiesAPI();
+    if (error || !data) return [];
+    return data;
+  },
+);
 
 export async function fetchProfileDataById(id: string) {
   return getUserDataAPI(id);
@@ -209,7 +265,9 @@ export async function updateTicketContent(
   if (error || !data) {
     return {
       success: false,
-      message: "Couldn't update ticket",
+      message: isPermissionDenied(error)
+        ? 'Admin role required to edit ticket content'
+        : "Couldn't update ticket",
       errors: null,
     };
   }
@@ -269,6 +327,30 @@ export async function updateTicketStatus(
   };
 }
 
+const updateTicketPrioritySchema = z.object({
+  id: z.uuid('Invalid ticket ID'),
+  priority: ticketPrioritySchema,
+});
+
+export async function updateTicketPriority(
+  id: Ticket['id'],
+  priority: Ticket['priority'],
+) {
+  const result = updateTicketPrioritySchema.safeParse({ id, priority });
+
+  if (!result.success) {
+    return { success: false, message: 'Invalid ticket priority update' };
+  }
+
+  const { data, error } = await updateTicketPriorityAPI(result.data);
+  if (error || !data) {
+    return { success: false, message: "Couldn't update ticket priority" };
+  }
+
+  refresh();
+  return { success: true, message: 'Ticket priority successfully updated' };
+}
+
 const updateTicketDueToSchema = z.object({
   id: z.uuid('Invalid ticket ID'),
   dueTo: z.union([z.iso.date('Invalid due date'), z.null()]),
@@ -326,6 +408,11 @@ export async function updateUser(
 
   const userName = usernameResult.username;
   const { data, error } = await updateUserAPI({ userName });
+
+  const supabase = await createClient();
+  const { error: refreshError } = await supabase.auth.refreshSession();
+
+  if (refreshError) throw refreshError;
 
   if (!data || error) {
     return {

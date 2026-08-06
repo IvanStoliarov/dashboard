@@ -13,16 +13,19 @@ export type Database = {
         Row: {
           email: string | null
           id: string
+          role: Database["public"]["Enums"]["user_role"]
           username: string | null
         }
         Insert: {
           email?: string | null
           id: string
+          role?: Database["public"]["Enums"]["user_role"]
           username?: string | null
         }
         Update: {
           email?: string | null
           id?: string
+          role?: Database["public"]["Enums"]["user_role"]
           username?: string | null
         }
         Relationships: []
@@ -64,6 +67,7 @@ export type Database = {
           description: string
           due_to: string | null
           id: string
+          priority: Database["public"]["Enums"]["ticket_priority"]
           status: Database["public"]["Enums"]["ticket_status"]
           ticket_updated_at: string | null
           ticket_updated_by: string | null
@@ -75,6 +79,7 @@ export type Database = {
           description: string
           due_to?: string | null
           id?: string
+          priority?: Database["public"]["Enums"]["ticket_priority"]
           status?: Database["public"]["Enums"]["ticket_status"]
           ticket_updated_at?: string | null
           ticket_updated_by?: string | null
@@ -86,6 +91,7 @@ export type Database = {
           description?: string
           due_to?: string | null
           id?: string
+          priority?: Database["public"]["Enums"]["ticket_priority"]
           status?: Database["public"]["Enums"]["ticket_status"]
           ticket_updated_at?: string | null
           ticket_updated_by?: string | null
@@ -118,6 +124,7 @@ export type Database = {
           p_assigned_to?: string[]
           p_description: string
           p_due_to?: string | null
+          p_priority?: Database["public"]["Enums"]["ticket_priority"]
           p_title: string
         }
         Returns: string
@@ -126,13 +133,27 @@ export type Database = {
         Args: never
         Returns: Database["public"]["Enums"]["ticket_status"][]
       }
+      get_ticket_priorities: {
+        Args: never
+        Returns: Database["public"]["Enums"]["ticket_priority"][]
+      }
       update_ticket_assignee: {
         Args: { p_profile_ids?: string[]; p_ticket_id: string }
         Returns: undefined
       }
+      update_ticket_content: {
+        Args: {
+          p_description: string
+          p_ticket_id: string
+          p_title: string
+        }
+        Returns: string
+      }
     }
     Enums: {
+      ticket_priority: "low" | "medium" | "high" | "urgent"
       ticket_status: "todo" | "in_progress" | "qa" | "done"
+      user_role: "admin" | "user"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -261,6 +282,7 @@ export const Constants = {
   public: {
     Enums: {
       ticket_status: ["todo", "in_progress", "qa", "done"],
+      user_role: ["admin", "user"],
     },
   },
 } as const

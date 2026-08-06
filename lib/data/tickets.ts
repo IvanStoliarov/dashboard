@@ -1,18 +1,20 @@
 import 'server-only';
 import type { PostgrestError } from '@supabase/supabase-js';
 import { createClient } from '../supabase/server';
-import { Profile, Ticket, TicketData } from '../types';
+import { Profile, Ticket, TicketData, TicketDeadlineFilter } from '../types';
 
 export async function createTicketAPI({
   title,
   description,
   assignedTo,
   dueTo,
+  priority
 }: {
   title: Ticket['title'];
   description: Ticket['description'];
   assignedTo: Profile['id'][];
   dueTo: Ticket['due_to'];
+  priority: Ticket['priority']
 }) {
   const supabase = await createClient();
 
@@ -23,11 +25,12 @@ export async function createTicketAPI({
       p_description: description,
       p_assigned_to: assignedTo,
       p_due_to: dueTo,
+      p_priority: priority,
     },
   );
 
   if (error) {
-    console.log(error)
+    console.log(error);
   }
 
   return { ticketId, error };
@@ -36,12 +39,30 @@ export async function createTicketAPI({
 interface TicketQueryOptions {
   assigneeIds?: Profile['id'][];
   searchQuery?: string;
+  status?: TicketData['status'];
+  deadline?: TicketDeadlineFilter;
   limit?: number;
 }
 
 interface TicketQueryResult {
   data: TicketData[] | null;
   error: PostgrestError | null;
+}
+
+const APPLICATION_TIME_ZONE = process.env.APP_TIME_ZONE ?? 'Europe/Warsaw';
+
+function getCurrentCalendarDate() {
+  const parts = new Intl.DateTimeFormat('en', {
+    timeZone: APPLICATION_TIME_ZONE,
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+  }).formatToParts(new Date());
+  const dateParts = Object.fromEntries(
+    parts.map(({ type, value }) => [type, value]),
+  );
+
+  return `${dateParts.year}-${dateParts.month}-${dateParts.day}`;
 }
 
 function getIlikeFilterValue(value: string) {
@@ -56,6 +77,8 @@ function getIlikeFilterValue(value: string) {
 async function queryTickets({
   assigneeIds,
   searchQuery,
+  status,
+  deadline,
   limit,
 }: TicketQueryOptions = {}): Promise<TicketQueryResult> {
   const supabase = await createClient();
@@ -75,10 +98,8 @@ async function queryTickets({
     if (ticketIds.length === 0) return { data: [], error: null };
   }
 
-  let query = supabase
-    .from('tickets')
-    .select(
-      `
+  let query = supabase.from('tickets').select(
+    `
       *,
       ticket_assignees (
         profile_id,
@@ -88,9 +109,20 @@ async function queryTickets({
         )
       )
     `,
-    );
+  );
 
   if (ticketIds) query = query.in('id', ticketIds);
+
+  if (status !== undefined) query = query.eq('status', status);
+
+  if (deadline !== undefined) {
+    const today = getCurrentCalendarDate();
+    query =
+      deadline === 'outdated'
+        ? query.lt('due_to', today)
+        : query.eq('due_to', today);
+    query = query.neq('status', 'done');
+  }
 
   if (searchQuery !== undefined) {
     const filterValue = getIlikeFilterValue(searchQuery);
@@ -108,8 +140,13 @@ async function queryTickets({
   return { data, error };
 }
 
-export async function getTicketsAPI(assigneeIds?: Profile['id'][], searchQuery?: string) {
-  return queryTickets({ assigneeIds, searchQuery });
+export async function getTicketsAPI(
+  assigneeIds?: Profile['id'][],
+  searchQuery?: string,
+  status?: TicketData['status'],
+  deadline?: TicketDeadlineFilter,
+) {
+  return queryTickets({ assigneeIds, searchQuery, status, deadline });
 }
 
 export async function searchTicketsAPI({
@@ -157,6 +194,13 @@ export async function getTicketStatusesAPI() {
   return { data, error };
 }
 
+export async function getTicketPrioritiesAPI() {
+  const supabase = await createClient();
+  const { data, error } = await supabase.rpc('get_ticket_priorities');
+
+  return { data, error };
+}
+
 export async function updateTicketAPI({
   id,
   title,
@@ -167,12 +211,11 @@ export async function updateTicketAPI({
   description: Ticket['description'];
 }) {
   const supabase = await createClient();
-  const { data, error } = await supabase
-    .from('tickets')
-    .update({ title, description })
-    .eq('id', id)
-    .select()
-    .single();
+  const { data, error } = await supabase.rpc('update_ticket_content', {
+    p_ticket_id: id,
+    p_title: title,
+    p_description: description,
+  });
 
   return { data, error };
 }
@@ -188,6 +231,24 @@ export async function updateTicketStatusAPI({
   const { data, error } = await supabase
     .from('tickets')
     .update({ status })
+    .eq('id', id)
+    .select()
+    .single();
+
+  return { data, error };
+}
+
+export async function updateTicketPriorityAPI({
+  id,
+  priority,
+}: {
+  id: Ticket['id'];
+  priority: Ticket['priority'];
+}) {
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from('tickets')
+    .update({ priority })
     .eq('id', id)
     .select()
     .single();

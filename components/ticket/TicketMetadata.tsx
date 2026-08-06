@@ -4,10 +4,14 @@ import { formatCreatedAt, formatCreatedAtTitle } from '@/lib/format';
 import type { Ticket, TicketData } from '@/lib/types';
 import StatusSelect from '../status/StatusSelect';
 import StatusButtons from '../status/StatusButtons';
-import CalendarPicker from '../CalendarPicker';
+import CalendarPicker from '../calendar/CalendarPicker';
 import { useAppDispatch, useAppSelector } from '@/lib/hooks/store';
-import { updateTicketStatus } from '@/lib/features/tasksSlice';
+import {
+  updateTicketDueToState,
+  updateTicketStatus,
+} from '@/lib/features/tasksSlice';
 import { flushSync } from 'react-dom';
+import TicketPriority from './TicketPriority';
 
 interface TicketMetadataProps {
   createdAt: string;
@@ -23,8 +27,12 @@ export default function TicketMetadata({
   status,
 }: TicketMetadataProps) {
   const statuses = useAppSelector(state => state.tasks.statuses);
+  const tickets = useAppSelector(state => state.tasks.tickets);
   const dispatch = useAppDispatch();
-  function onUpdate({
+
+  const ticketData = tickets.find(ticket => ticket.id === id);
+
+  function onUpdateStatus({
     ticketId,
     status,
   }: {
@@ -47,13 +55,26 @@ export default function TicketMetadata({
 
     document.startViewTransition(commitStatusUpdate);
   }
+
+  function onUpdateDueToDate({
+    ticketId,
+    newDate,
+  }: {
+    ticketId: TicketData['id'];
+    newDate: TicketData['due_to'];
+  }) {
+    dispatch(updateTicketDueToState({ ticketId, newDate }));
+  }
+
+  if (!ticketData) return null;
+
   return (
     <div className='mb-3 flex flex-wrap items-center gap-2.5'>
       <div className='flex flex-col items-start gap-1.5'>
         <StatusSelect
           position='left'
           currentStatus={status}
-          onUpdate={onUpdate}
+          onUpdate={onUpdateStatus}
         >
           <StatusButtons
             ticketId={id}
@@ -61,7 +82,13 @@ export default function TicketMetadata({
             statuses={statuses}
           />
         </StatusSelect>
-        <CalendarPicker ticketId={id} initialValue={dueTo} />
+        <CalendarPicker
+          key={dueTo}
+          onUpdate={onUpdateDueToDate}
+          ticketId={id}
+          initialValue={dueTo}
+        />
+        <TicketPriority priority={ticketData.priority} />
       </div>
       <time
         dateTime={createdAt}

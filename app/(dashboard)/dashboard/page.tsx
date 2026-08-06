@@ -1,27 +1,13 @@
 import { PlusIcon } from '@heroicons/react/24/outline';
-import { redirect } from 'next/navigation';
-import { createClient } from '@/lib/supabase/server';
 import LinkAsButton from '@/components/LinkAsButton';
 import TicketList from '@/components/TicketList';
 
-export default async function DashboardPage({
+export default function DashboardPage({
   searchParams,
 }: {
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }) {
-  const supabase = await createClient();
-  const { data } = await supabase.auth.getClaims();
-  const claims = data?.claims;
-  const {
-    sortby = 'due-to',
-    sortdir = 'asc',
-    filterbyuser,
-    search,
-  } = await searchParams;
-
-  if (!claims) {
-    redirect('/login');
-  }
+  const searchParamsPromise = searchParams;
 
   return (
     <div>
@@ -44,14 +30,7 @@ export default async function DashboardPage({
           </LinkAsButton>
         </div>
       </section>
-      <TicketList
-        sortby={Array.isArray(sortby) ? sortby.at(0) : sortby}
-        sortdir={Array.isArray(sortdir) ? sortdir.at(0) : sortdir}
-        search={Array.isArray(search) ? search.at(0) : search}
-        filterbyuser={
-          Array.isArray(filterbyuser) ? filterbyuser.at(0) : filterbyuser
-        }
-      />
+      <TicketList searchParamsPromise={searchParamsPromise} />
     </div>
   );
 }
